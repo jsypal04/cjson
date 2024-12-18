@@ -1,0 +1,3 @@
+/home/sypalj/cjson/build/CMakeFiles/cjson.dir
+/home/sypalj/cjson/build/CMakeFiles/edit_cache.dir
+/home/sypalj/cjson/build/CMakeFiles/rebuild_cache.dir

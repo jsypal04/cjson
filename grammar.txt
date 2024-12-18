@@ -1,0 +1,12 @@
+<start> := <object>
+
+<object> := '{' <key> ':' <value> [, <key> ':' <value> ] '}'
+<array> := '[' (<string> | <number> | <bool> | <array> | <object>) ']'
+
+<key> := <string>
+<value> := <string> | <number> | <bool> | <array> | <object>
+
+<string> := " [ (any character) ] "
+<number> := (-) (0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9) [ (0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9) ] (.(0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9) [ (0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9))
+
+<bool> := true | false
