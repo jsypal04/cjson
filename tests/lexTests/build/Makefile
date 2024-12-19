@@ -117,41 +117,41 @@ depend:
 .PHONY : depend
 
 #=============================================================================
-# Target rules for targets named test1
+# Target rules for targets named lexTest1
 
 # Build rule for target.
-test1: cmake_check_build_system
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 test1
-.PHONY : test1
+lexTest1: cmake_check_build_system
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/Makefile2 lexTest1
+.PHONY : lexTest1
 
 # fast build rule for target.
-test1/fast:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/test1.dir/build.make CMakeFiles/test1.dir/build
-.PHONY : test1/fast
+lexTest1/fast:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/lexTest1.dir/build.make CMakeFiles/lexTest1.dir/build
+.PHONY : lexTest1/fast
 
-test1.o: test1.c.o
-.PHONY : test1.o
+lexTest1.o: lexTest1.c.o
+.PHONY : lexTest1.o
 
 # target to build an object file
-test1.c.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/test1.dir/build.make CMakeFiles/test1.dir/test1.c.o
-.PHONY : test1.c.o
+lexTest1.c.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/lexTest1.dir/build.make CMakeFiles/lexTest1.dir/lexTest1.c.o
+.PHONY : lexTest1.c.o
 
-test1.i: test1.c.i
-.PHONY : test1.i
+lexTest1.i: lexTest1.c.i
+.PHONY : lexTest1.i
 
 # target to preprocess a source file
-test1.c.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/test1.dir/build.make CMakeFiles/test1.dir/test1.c.i
-.PHONY : test1.c.i
+lexTest1.c.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/lexTest1.dir/build.make CMakeFiles/lexTest1.dir/lexTest1.c.i
+.PHONY : lexTest1.c.i
 
-test1.s: test1.c.s
-.PHONY : test1.s
+lexTest1.s: lexTest1.c.s
+.PHONY : lexTest1.s
 
 # target to generate assembly for a file
-test1.c.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/test1.dir/build.make CMakeFiles/test1.dir/test1.c.s
-.PHONY : test1.c.s
+lexTest1.c.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/lexTest1.dir/build.make CMakeFiles/lexTest1.dir/lexTest1.c.s
+.PHONY : lexTest1.c.s
 
 # Help Target
 help:
@@ -161,10 +161,10 @@ help:
 	@echo "... depend"
 	@echo "... edit_cache"
 	@echo "... rebuild_cache"
-	@echo "... test1"
-	@echo "... test1.o"
-	@echo "... test1.i"
-	@echo "... test1.s"
+	@echo "... lexTest1"
+	@echo "... lexTest1.o"
+	@echo "... lexTest1.i"
+	@echo "... lexTest1.s"
 .PHONY : help
 
 

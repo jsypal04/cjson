@@ -58,10 +58,11 @@ void populateCorrectTokens() {
     correctTokens[44] = RBRACE;
 }
 
-int main() {
+int main(int argc, char* argv[]) {
     populateCorrectTokens();
 
-    SourceLexState state = initLexer("test1.json");
+    char* jsonSrc = argv[1];
+    SourceLexState state = initLexer(jsonSrc);
 
     generatedTokens[0] = state.token;
 
