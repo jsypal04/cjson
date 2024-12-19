@@ -1,1 +1,0 @@
-/usr/bin/cc CMakeFiles/lexTest1.dir/lexTest1.c.o -o /home/sypalj/cjson/tests/bin/lexTest1  /home/sypalj/cjson/build/libcjson.a 

@@ -1,1 +1,0 @@
-/usr/bin/cc CMakeFiles/test1.dir/test1.c.o -o /home/sypalj/cjson/tests/bin/test1  /home/sypalj/cjson/build/libcjson.a 

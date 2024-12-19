@@ -1,3 +1,0 @@
-/home/sypalj/cjson/tests/lexTests/build/CMakeFiles/lexTest1.dir
-/home/sypalj/cjson/tests/lexTests/build/CMakeFiles/edit_cache.dir
-/home/sypalj/cjson/tests/lexTests/build/CMakeFiles/rebuild_cache.dir
