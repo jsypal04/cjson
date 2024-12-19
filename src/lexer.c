@@ -1,4 +1,4 @@
-#include "lexer.h"
+#include "cjson.h"
 #include <complex.h>
 #include <stdio.h>
 #include <ctype.h>
