@@ -34,6 +34,6 @@ else
         echo "Running unit test: bin/$test"
         ./bin/$test "jsonSrc/$test.json"
     else
-        echo "ERROR: Unit test bin/$test does not exist"
+        echo "ERROR: Unit test bin/$test does not exist (type ./test.sh -help for the help menu)"
     fi
 fi
