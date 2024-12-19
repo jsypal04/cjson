@@ -27,20 +27,22 @@ I am building this on linux and only linux with no other operating system in min
 
 The folder structure of the project is as follows:
 
-- root
-  - build (contains cmake generated files)
+- **root**
+  - **build** (contains cmake generated files)
     - libcjson.a
-  - src
+  - **src**
     - CMakeLists.txt
     - lexer.c
     - lexer.h
-  - tests
-    - lexTests
-      - build (contains cmake generated files)
-        - test1
+  - **tests**
+    - **bin**
+      - binary files for all unit tests
+    - **jsonSrc**
+      - json source files for all unit tests
+    - **lexTests**
+      - **build** (contains cmake generated files)
       - CMakeLists.txt
-      - test1.c
-      - test1.json
+      - C source code for unit tests
     - test.sh
 
 There are three main directories: build, src, and tests. build contains all cmake generated files for the

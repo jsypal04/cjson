@@ -1,5 +1,6 @@
 #include "lexer.h"
 #include <complex.h>
+#include <stdio.h>
 #include <ctype.h>
 #include <string.h>
 
@@ -103,6 +104,9 @@ void lex(SourceLexState* state) {
         if (state->nextChar != '.') {
             state->token = NUM;
             state->lexeme = lexemeBuf;
+
+            // move the file pointer back one byte
+            fseek(state->source, -1, SEEK_CUR);
             return;
         }
 
@@ -135,15 +139,8 @@ void lex(SourceLexState* state) {
             state->nextChar = getc(state->source);
         }
 
-        // add the last retrived digit
-        if (index < MAX_STR_LEN) {
-            lexemeBuf[index] = state->nextChar;
-            index++;
-        }
-        else {
-            printf("ERROR: Maximum lexeme length (10000) exceeded.\n");
-            exit(1);
-        }
+        // move the file pointer back one byte
+        fseek(state->source, -1, SEEK_CUR);
 
         state->token = NUM;
         state->lexeme = lexemeBuf;
@@ -190,6 +187,8 @@ void lex(SourceLexState* state) {
             printf("ERROR: The only identifiers allowed are true, false, and null\n");
             exit(1);
         }
+        // move the file pointer back one byte
+        fseek(state->source, -1, SEEK_CUR);
     }
     // if the character is a left brace return info for left braces
     else if (state->nextChar == '{') {
