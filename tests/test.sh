@@ -21,7 +21,6 @@ then
         index=$(expr index "$test" "/")
         len=${#test}
         jsonFilename=$(expr substr "$test" $(($index + 1)) $len)
-        echo $jsonFilename
         echo "Running unit test: $test"
         $test "jsonSrc/$jsonFilename.json"
     done

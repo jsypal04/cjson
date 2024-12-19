@@ -1,5 +1,5 @@
 // basic syntax lexing test
-// this test uses the test1.json source file
+// this test uses the lexTest1.json source file
 #include <stdlib.h>
 #include "../../src/lexer.h"
 
@@ -48,7 +48,7 @@ void populateCorrectTokens() {
     correctTokens[34] = STR; // "John"
     correctTokens[35] = COMMA;
     correctTokens[36] = STR; // "lastName"
-    correctTokens[37] = COLON;
+    correctTokens[37] = COLON ;
     correctTokens[38] = STR; // "Doe"
     correctTokens[39] = COMMA;
     correctTokens[40] = STR; // "age"
@@ -64,26 +64,24 @@ int main(int argc, char* argv[]) {
     char* jsonSrc = argv[1];
     SourceLexState state = initLexer(jsonSrc);
 
-    generatedTokens[0] = state.token;
-
-    int index = 1;
-
+    int index = 0;
     while (state.nextChar != EOF) {
-        lex(&state);
-
         if (index >= TOKEN_LEN) {
-            printf("ERROR: lexer test 1 (basic syntax test) failed. Lexer output too many tokens.");
+            printf("ERROR: lexer test 1 (basic syntax test) failed. Lexer output too many tokens.\n");
             failed = 1;
             break;
         }
 
+        // printf("%d. token: %d, lexeme: %s\n", index, state.token, state.lexeme);
         generatedTokens[index] = state.token;
         index++;
+
+        lex(&state);
     }
 
     for (int i = 0; i < TOKEN_LEN; i++) {
         if (generatedTokens[i] != correctTokens[i]) {
-            printf("ERROR: lexer test 1 (basic syntax test) failed. Token (%d) output in position %d is incorrect.\n", generatedTokens[i], i);
+            printf("ERROR: lexer test 1 (basic syntax test) failed. Token (%d) output in position %d is incorrect (correct token: %d).\n", generatedTokens[i], i, correctTokens[i]);
             failed = 1;
         }
     }
@@ -92,6 +90,8 @@ int main(int argc, char* argv[]) {
         printf("SUCCESS: lexer test 1 passed.\n");
         exit(0);
     }
+
+    fclose(state.source);
 
     exit(1);
 
