@@ -49,3 +49,9 @@ There are three main directories: build, src, and tests. build contains all cmak
 project. src contains the project's source code. tests contains unit tests written in C with a bash script
 to run one or all of them. The tests directory also contains build directory for each unit test that contains
 the unit test executable that the bash script will run.
+
+## Building From Source
+
+---
+
+I'll deal with this later
