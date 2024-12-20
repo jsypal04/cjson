@@ -88,4 +88,12 @@ NextPairAST* parseNextPair(SourceLexState* state);
 ValueAST* parseValue(SourceLexState* state);
 NextValueAST* parseNextValue(SourceLexState* state);
 
+// destructor for the AST
+void destroyAST(ObjectAST* root);
+void destroyObject(ObjectAST* obj);
+void destroyArray(ArrayAST* array);
+void destroyNextPair(NextPairAST* nextPair);
+void destroyValue(ValueAST* value);
+void destroyNextValue(NextValueAST* nextValue);
+
 #endif

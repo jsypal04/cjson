@@ -166,3 +166,78 @@ NextValueAST* parseNextValue(SourceLexState* state) {
         return nextValue;
     }
 }
+
+void destroyAST(ObjectAST* root) {
+    destroyObject(root);
+    free(root);
+    root = NULL;
+}
+
+void destroyObject(ObjectAST* obj) {
+    if (obj->value != NULL) {
+        destroyValue(obj->value);
+        free(obj->value);
+        obj->value = NULL;
+    }
+
+    if (obj->nextPair != NULL) {
+        destroyNextPair(obj->nextPair);
+        free(obj->nextPair);
+        obj->nextPair = NULL;
+    }
+}
+
+void destroyArray(ArrayAST* array) {
+    if (array->value != NULL) {
+        destroyValue(array->value);
+        free(array->value);
+        array->value = NULL;
+    }
+
+    if (array->nextValue != NULL) {
+        destroyNextValue(array->nextValue);
+        free(array->nextValue);
+        array->nextValue = NULL;
+    }
+}
+
+void destroyNextPair(NextPairAST* nextPair) {
+    if (nextPair->value != NULL) {
+        destroyValue(nextPair->value);
+        free(nextPair->value);
+        nextPair->value = NULL;
+    }
+
+    if (nextPair->nextPair != NULL) {
+        destroyNextPair(nextPair->nextPair);
+        free(nextPair->nextPair);
+        nextPair->nextPair = NULL;
+    }
+}
+
+void destroyValue(ValueAST* value) {
+    if (value->obj != NULL) {
+        destroyObject(value->obj);
+        free(value->obj);
+        value->obj = NULL;
+    }
+    if (value->array != NULL) {
+        destroyArray(value->array);
+        free(value->array);
+        value->array = NULL;
+    }
+}
+
+void destroyNextValue(NextValueAST* nextValue) {
+    if (nextValue->value != NULL) {
+        destroyValue(nextValue->value);
+        free(nextValue->value);
+        nextValue->value = NULL;
+    }
+
+    if (nextValue->nextValue != NULL) {
+        destroyNextValue(nextValue->nextValue);
+        free(nextValue->nextValue);
+        nextValue->nextValue = NULL;
+    }
+}
