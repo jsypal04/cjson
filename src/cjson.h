@@ -77,7 +77,8 @@ void lex(SourceLexState* statePtr);
 AST FUNCTIONS
 
 The functions for the recursive descent descent parser are defined here. There is
-one for each node plus a bonus one at the beginning.
+one for each node plus a bonus one at the beginning. All functions should return with
+state containing the next lexeme to be processed.
 */
 
 ObjectAST* parse(const char* sourcePath);
