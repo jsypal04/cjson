@@ -6,13 +6,7 @@
 
 #define MAX_STR_LEN 10000
 
-// forward AST type definitions
-typedef struct ObjectAST ObjectAST;
-typedef struct NextPairAST NextPairAST;
-typedef struct ValueAST ValueAST;
-typedef struct NextValueAST NextValueAST;
-typedef struct ArrayAST ArrayAST;
-
+// Token defintions
 typedef enum Token {
     END,
     NONE,
@@ -28,17 +22,34 @@ typedef enum Token {
     COMMA
 } Token;
 
-/************************
-AST TYPES
-
-The types for each node of the AST for the parser are defined below
-************************/
+// lexer state type defintion
 typedef struct SourceLexState {
     FILE* source;
     char nextChar;
     Token token;
     char* lexeme;
 } SourceLexState;
+
+/*
+Lexer Functions
+*/
+SourceLexState initLexer(const char* sourcePath);
+void lex(SourceLexState* statePtr);
+
+
+
+/************************
+AST TYPES
+
+The types for each node of the AST for the parser are defined below
+************************/
+
+// forward AST type definitions
+typedef struct ObjectAST ObjectAST;
+typedef struct NextPairAST NextPairAST;
+typedef struct ValueAST ValueAST;
+typedef struct NextValueAST NextValueAST;
+typedef struct ArrayAST ArrayAST;
 
 // only one field should be populated, all else null
 struct ValueAST {
@@ -69,12 +80,8 @@ struct ObjectAST {
     NextPairAST* nextPair;
 };
 
-
-SourceLexState initLexer(const char* sourcePath);
-void lex(SourceLexState* statePtr);
-
 /*
-AST FUNCTIONS
+AST/Parser FUNCTIONS (naturally we use a recursive descent parser like a boss)
 
 The functions for the recursive descent descent parser are defined here. There is
 one for each node plus a bonus one at the beginning. All functions should return with

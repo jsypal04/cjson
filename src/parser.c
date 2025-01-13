@@ -1,14 +1,23 @@
 #include "cjson.h"
 #include <stdlib.h>
 
+/* Variable to keep track of the depth of the branch of the parse tree that
+the parser is on. For debugging purposes. */
+int astDepth = 0;
+
 ObjectAST* parse(const char* sourcePath) {
+    printf("Begin parsing %s.\n", sourcePath);
+
     SourceLexState state = initLexer(sourcePath);
     ObjectAST* root = parseObject(&state);
     fclose(state.source);
+
+    printf("End parsing %s.\n", sourcePath);
     return root;
 }
 
 ObjectAST* parseObject(SourceLexState* state) {
+    printf("Parsing object...\n");
     if (state->token != LBRACE) {
         printf("MAYHEM: We in serious trouble now.\n");
         exit(0);
@@ -27,12 +36,16 @@ ObjectAST* parseObject(SourceLexState* state) {
         printf("ERROR: object key must be followed by a colon.\n");
         exit(1);
     }
+    astDepth++;
     ValueAST* value = parseValue(state);
+    astDepth--;
     obj->value = value;
 
     // there is another key-value pair to process
     if (state->token == COMMA) {
+        astDepth++;
         NextPairAST* nextPair = parseNextPair(state);
+        astDepth--;
         obj->nextPair = nextPair;
         return obj;
     }
@@ -45,6 +58,7 @@ ObjectAST* parseObject(SourceLexState* state) {
         printf("ERROR: unknown symbol %s.\n", state->lexeme);
         exit(1);
     }
+    printf("Done parsing object.\n");
 }
 
 ArrayAST* parseArray(SourceLexState* state) {
