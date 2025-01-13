@@ -68,9 +68,13 @@ ArrayAST* parseArray(SourceLexState* state) {
     }
 
     ArrayAST* array = (ArrayAST*)malloc(sizeof(ArrayAST));
+    astDepth++;
     ValueAST* value = parseValue(state);
+    astDepth--;
     if (state->token == COMMA) {
+        astDepth++;
         NextValueAST* nextValue = parseNextValue(state);
+        astDepth--;
         array->nextValue = nextValue;
         return array;
     }
@@ -103,12 +107,16 @@ NextPairAST* parseNextPair(SourceLexState* state) {
         printf("ERROR: object key must be followed by a colon.\n");
         exit(1);
     }
+    astDepth++;
     ValueAST* value = parseValue(state);
+    astDepth--;
     nextPair->value = value;
 
     if (state->token == COMMA) {
         // another pair to parse
+        astDepth++;
         NextPairAST* nextNextPair = parseNextPair(state);
+        astDepth--;
         nextPair->nextPair = nextNextPair;
         return nextPair;
     }
@@ -137,7 +145,9 @@ ValueAST* parseValue(SourceLexState* state) {
     }
     else if (state->token == LBRACKET) {
         // array
+        astDepth++;
         ArrayAST* array = parseArray(state);
+        astDepth--;
         value->array = array;
         value->lexeme = NULL;
         value->obj = NULL;
@@ -145,7 +155,9 @@ ValueAST* parseValue(SourceLexState* state) {
     }
     else if (state->token == LBRACE) {
         // object
+        astDepth++;
         ObjectAST* obj = parseObject(state);
+        astDepth--;
         value->obj = obj;
         value->lexeme = NULL;
         value->array = NULL;
@@ -165,12 +177,16 @@ NextValueAST* parseNextValue(SourceLexState* state) {
     }
 
     NextValueAST* nextValue = (NextValueAST*)malloc(sizeof(NextPairAST));
+    astDepth++;
     ValueAST* value = parseValue(state);
+    astDepth--;
     nextValue->value = value;
     lex(state);
     if (state->token == COMMA) {
         // parse another nextValue
+        astDepth++;
         NextValueAST* nextNextValue = parseNextValue(state);
+        astDepth--;
         nextValue->nextValue = nextNextValue;
         return nextValue;
     }
