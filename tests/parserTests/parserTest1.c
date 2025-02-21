@@ -50,5 +50,8 @@ int main(int argc, char* argv[]) {
     }
     const char* jsonSrcPath = argv[1];
     ObjectAST* ast = parse(jsonSrcPath);
+    
+    printf("%s\n", ast->key);
+
     exit(0);
 }

@@ -4,9 +4,11 @@
 /* Variable to keep track of the depth of the branch of the parse tree that
 the parser is on. For debugging purposes. */
 int astDepth = 0;
+char keyboardInput;
 
 ObjectAST* parse(const char* sourcePath) {
     printf("Begin parsing %s.\n", sourcePath);
+    scanf("%c", &keyboardInput);
 
     SourceLexState state = initLexer(sourcePath);
     ObjectAST* root = parseObject(&state);
@@ -17,29 +19,43 @@ ObjectAST* parse(const char* sourcePath) {
 }
 
 ObjectAST* parseObject(SourceLexState* state) {
-    printf("Parsing object...\n");
+    printf("Parsing object (ast depth: %d)...\n", astDepth);
+    scanf("%c\n", &keyboardInput);
+    
     if (state->token != LBRACE) {
         printf("MAYHEM: We in serious trouble now.\n");
         exit(0);
     }
-
+    
+    // first, create an empty object ast node 
     ObjectAST* obj = (ObjectAST*)malloc(sizeof(ObjectAST));
-
+    
+    // get the next lexeme (should be the first key of the json object)
     lex(state);
+    // if the lexeme is not a string, it is an invalid key, print an error
     if (state->token != STR) {
         printf("ERROR: object key must be a string.\n");
         exit(1);
     }
+
+    // otherwise, set the key attribute of obj to the key that was read
     obj->key = state->lexeme;
+    printf("    recorded key: %s\n", obj->key);
+    scanf("%c", &keyboardInput);
+    // get the next lexeme (should be a colon)
     lex(state);
+    // if the next lexeme is not a colon, it is invalid, print an error
     if (state->token != COLON) {
         printf("ERROR: object key must be followed by a colon.\n");
         exit(1);
     }
+    // otherwise, parse the value
     astDepth++;
     ValueAST* value = parseValue(state);
     astDepth--;
     obj->value = value;
+
+    lex(state);
 
     // there is another key-value pair to process
     if (state->token == COMMA) {
@@ -49,47 +65,63 @@ ObjectAST* parseObject(SourceLexState* state) {
         obj->nextPair = nextPair;
         return obj;
     }
-    // end of object
+    // end of object only one entry
     else if (state->token == RBRACE) {
         obj->nextPair = NULL;
+        lex(state);
         return obj;
     }
     else {
-        printf("ERROR: unknown symbol %s.\n", state->lexeme);
+        printf("ERROR: unknown symbol (parser.c:58) %s.\n", state->lexeme);
         exit(1);
     }
     printf("Done parsing object.\n");
 }
 
 ArrayAST* parseArray(SourceLexState* state) {
+    printf("Parsing array (ast depth: %d)...\n", astDepth); 
+    scanf("%c", &keyboardInput);
     if (state->token != LBRACKET) {
         printf("MAYHEM: We in serious trouble now.\n");
         exit(0);
     }
 
+    // create a new array object
     ArrayAST* array = (ArrayAST*)malloc(sizeof(ArrayAST));
+    // parse the first value
     astDepth++;
     ValueAST* value = parseValue(state);
     astDepth--;
+    // get the next unprocessed state
+    lex(state);
+    // if the lexeme is a comma, there is another value to parse
     if (state->token == COMMA) {
+        // parse the value
         astDepth++;
         NextValueAST* nextValue = parseNextValue(state);
         astDepth--;
         array->nextValue = nextValue;
+        printf("    state: %s\n", state->lexeme);
+        scanf("%c", &keyboardInput);
         return array;
     }
     else if (state->token == RBRACKET) {
+        printf("    found the end the array.\n");
+        scanf("%c", &keyboardInput);
         array->nextValue = NULL;
         lex(state);
         return array;
     }
     else {
-        printf("ERROR: unknown character %s.\n", state->lexeme);
+        printf("ERROR: unknown character (parser.c:107) %s.\n", state->lexeme);
         exit(1);
     }
+    printf("Done parsing array.\n");
 }
 
 NextPairAST* parseNextPair(SourceLexState* state) {
+    printf("Parsing next pair (ast depth: %d)...\n", astDepth);
+    scanf("%c", &keyboardInput);
     if (state->token != COMMA) {
         printf("MAYHEM: We in serious trouble now.\n");
         exit(0);
@@ -102,6 +134,8 @@ NextPairAST* parseNextPair(SourceLexState* state) {
         exit(1);
     }
     nextPair->key = state->lexeme;
+    printf("    recorded key: %s\n", nextPair->key);
+    scanf("%c", &keyboardInput);
     lex(state);
     if (state->token != COLON) {
         printf("ERROR: object key must be followed by a colon.\n");
@@ -111,6 +145,8 @@ NextPairAST* parseNextPair(SourceLexState* state) {
     ValueAST* value = parseValue(state);
     astDepth--;
     nextPair->value = value;
+    
+    lex(state);
 
     if (state->token == COMMA) {
         // another pair to parse
@@ -130,21 +166,33 @@ NextPairAST* parseNextPair(SourceLexState* state) {
         printf("ERROR: unknown symbol %s.\n", state->lexeme);
         exit(1);
     }
+    printf("Done parsing next pair.\n");
 }
 
 ValueAST* parseValue(SourceLexState* state) {
+    printf("Parsing value (ast depth: %d)...\n", astDepth);
+    scanf("%c", &keyboardInput);
+    // first, create an empty value object
     ValueAST* value = (ValueAST*)malloc(sizeof(ValueAST));
-
+    printf("    state given to parseValue: %s\n", state->lexeme);
+    scanf("%c", &keyboardInput);
+    
+    // get the next lexeme (value assumes it receives an already processed state
     lex(state);
+    printf("    first state retrieved by parseValue: %s\n", state->lexeme);
+    scanf("%c", &keyboardInput);
+    // if the value is a primitive (str, num, bool, or null) simply set the value object's lexeme attribute to it
     if (state->token == STR || state->token == NUM || state->token == BOOL || state->token == NONE) {
         value->lexeme = state->lexeme;
         value->array = NULL;
         value->obj = NULL;
-        lex(state);
+        // lex to get the next unprocessed state
+//        lex(state);
         return value;
     }
+    // if the lexeme is a left bracket, the value is an array
     else if (state->token == LBRACKET) {
-        // array
+        // parse the array
         astDepth++;
         ArrayAST* array = parseArray(state);
         astDepth--;
@@ -153,8 +201,9 @@ ValueAST* parseValue(SourceLexState* state) {
         value->obj = NULL;
         return value;
     }
+    // if the lexeme is a left bracket, the value is an object
     else if (state->token == LBRACE) {
-        // object
+        // parse the object 
         astDepth++;
         ObjectAST* obj = parseObject(state);
         astDepth--;
@@ -163,25 +212,34 @@ ValueAST* parseValue(SourceLexState* state) {
         value->array = NULL;
         return value;
     }
+    // otherwise, the value is unvalid
     else {
         // error
         printf("ERROR: Invalid value.\n");
         exit(1);
     }
+    printf("Done parsing value.\n");
 }
 
 NextValueAST* parseNextValue(SourceLexState* state) {
+    printf("Parsing next value (ast depth: %d)...\n", astDepth);
+    scanf("%c", &keyboardInput);
     if (state->token != COMMA) {
         printf("MAYHEM: We in serious trouble now.\n");
         exit(0);
     }
-
+    
+    // create an empty nextValue object
     NextValueAST* nextValue = (NextValueAST*)malloc(sizeof(NextPairAST));
+    // parse the value
     astDepth++;
     ValueAST* value = parseValue(state);
     astDepth--;
+    // set the value attribute to the parsed value
     nextValue->value = value;
+    // get the next state
     lex(state);
+    // if the lexeme is a comma, parse another value
     if (state->token == COMMA) {
         // parse another nextValue
         astDepth++;
@@ -190,11 +248,13 @@ NextValueAST* parseNextValue(SourceLexState* state) {
         nextValue->nextValue = nextNextValue;
         return nextValue;
     }
+    // other wise return as is
     else {
         // return as is
         nextValue->nextValue = NULL;
         return nextValue;
     }
+    printf("Done parsing next value.\n");
 }
 
 void destroyAST(ObjectAST* root) {
