@@ -8,7 +8,7 @@ char keyboardInput;
 
 ObjectAST* parse(const char* sourcePath) {
     printf("Begin parsing %s.\n", sourcePath);
-    scanf("%c", &keyboardInput);
+//    scanf("%c", &keyboardInput);
 
     SourceLexState state = initLexer(sourcePath);
     ObjectAST* root = parseObject(&state);
@@ -19,8 +19,8 @@ ObjectAST* parse(const char* sourcePath) {
 }
 
 ObjectAST* parseObject(SourceLexState* state) {
-    printf("Parsing object (ast depth: %d)...\n", astDepth);
-    scanf("%c\n", &keyboardInput);
+//    printf("Parsing object (ast depth: %d)...\n", astDepth);
+//    scanf("%c\n", &keyboardInput);
     
     if (state->token != LBRACE) {
         printf("MAYHEM: We in serious trouble now.\n");
@@ -41,7 +41,7 @@ ObjectAST* parseObject(SourceLexState* state) {
     // otherwise, set the key attribute of obj to the key that was read
     obj->key = state->lexeme;
     printf("    recorded key: %s\n", obj->key);
-    scanf("%c", &keyboardInput);
+//    scanf("%c", &keyboardInput);
     // get the next lexeme (should be a colon)
     lex(state);
     // if the next lexeme is not a colon, it is invalid, print an error
@@ -80,7 +80,7 @@ ObjectAST* parseObject(SourceLexState* state) {
 
 ArrayAST* parseArray(SourceLexState* state) {
     printf("Parsing array (ast depth: %d)...\n", astDepth); 
-    scanf("%c", &keyboardInput);
+//    scanf("%c", &keyboardInput);
     if (state->token != LBRACKET) {
         printf("MAYHEM: We in serious trouble now.\n");
         exit(0);
@@ -102,12 +102,12 @@ ArrayAST* parseArray(SourceLexState* state) {
         astDepth--;
         array->nextValue = nextValue;
         printf("    state: %s\n", state->lexeme);
-        scanf("%c", &keyboardInput);
+//        scanf("%c", &keyboardInput);
         return array;
     }
     else if (state->token == RBRACKET) {
         printf("    found the end the array.\n");
-        scanf("%c", &keyboardInput);
+//        scanf("%c", &keyboardInput);
         array->nextValue = NULL;
         lex(state);
         return array;
@@ -121,7 +121,7 @@ ArrayAST* parseArray(SourceLexState* state) {
 
 NextPairAST* parseNextPair(SourceLexState* state) {
     printf("Parsing next pair (ast depth: %d)...\n", astDepth);
-    scanf("%c", &keyboardInput);
+//    scanf("%c", &keyboardInput);
     if (state->token != COMMA) {
         printf("MAYHEM: We in serious trouble now.\n");
         exit(0);
@@ -135,7 +135,7 @@ NextPairAST* parseNextPair(SourceLexState* state) {
     }
     nextPair->key = state->lexeme;
     printf("    recorded key: %s\n", nextPair->key);
-    scanf("%c", &keyboardInput);
+//    scanf("%c", &keyboardInput);
     lex(state);
     if (state->token != COLON) {
         printf("ERROR: object key must be followed by a colon.\n");
@@ -171,16 +171,16 @@ NextPairAST* parseNextPair(SourceLexState* state) {
 
 ValueAST* parseValue(SourceLexState* state) {
     printf("Parsing value (ast depth: %d)...\n", astDepth);
-    scanf("%c", &keyboardInput);
+//    scanf("%c", &keyboardInput);
     // first, create an empty value object
     ValueAST* value = (ValueAST*)malloc(sizeof(ValueAST));
     printf("    state given to parseValue: %s\n", state->lexeme);
-    scanf("%c", &keyboardInput);
+//    scanf("%c", &keyboardInput);
     
     // get the next lexeme (value assumes it receives an already processed state
     lex(state);
     printf("    first state retrieved by parseValue: %s\n", state->lexeme);
-    scanf("%c", &keyboardInput);
+//    scanf("%c", &keyboardInput);
     // if the value is a primitive (str, num, bool, or null) simply set the value object's lexeme attribute to it
     if (state->token == STR || state->token == NUM || state->token == BOOL || state->token == NONE) {
         value->lexeme = state->lexeme;
@@ -223,7 +223,7 @@ ValueAST* parseValue(SourceLexState* state) {
 
 NextValueAST* parseNextValue(SourceLexState* state) {
     printf("Parsing next value (ast depth: %d)...\n", astDepth);
-    scanf("%c", &keyboardInput);
+//    scanf("%c", &keyboardInput);
     if (state->token != COMMA) {
         printf("MAYHEM: We in serious trouble now.\n");
         exit(0);
