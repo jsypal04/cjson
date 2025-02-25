@@ -4,7 +4,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#define MAX_STR_LEN 10000
+#define MAX_LEX_LEN 10000
 
 // Token defintions
 typedef enum Token {

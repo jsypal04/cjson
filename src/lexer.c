@@ -48,7 +48,7 @@ void lex(SourceLexState* state) {
     }
     // if character is a quote enter string state
     if (state->nextChar == '"') {
-        char lexemeBuf[MAX_STR_LEN] = "\0";
+        char lexemeBuf[MAX_LEX_LEN] = "\0";
 
         // retrieve characters till another quote is reached
         int index = 0;
@@ -61,7 +61,7 @@ void lex(SourceLexState* state) {
 
         while (state->nextChar != '"') {
             state->nextChar = getc(state->source);
-            if (index < MAX_STR_LEN) {
+            if (index < MAX_LEX_LEN) {
                 lexemeBuf[index] = state->nextChar;
                 index++;
             }
@@ -78,7 +78,7 @@ void lex(SourceLexState* state) {
     // if character is a number or dash enter number state
     else if (isdigit(state->nextChar) || state->nextChar == '-') {
         // fetch characters while character is numeric
-        char lexemeBuf[MAX_STR_LEN] = "\0";
+        char lexemeBuf[MAX_LEX_LEN] = "\0";
 
         // printf("Lexeme: %s\n", state->lexeme);
         // printf("Lexeme Buf: %s\n", lexemeBuf);
@@ -90,7 +90,7 @@ void lex(SourceLexState* state) {
         state->nextChar = getc(state->source);
 
         while (isdigit(state->nextChar)) {
-            if (index < MAX_STR_LEN) {
+            if (index < MAX_LEX_LEN) {
                 lexemeBuf[index] = state->nextChar;
                 index++;
             }
@@ -111,7 +111,7 @@ void lex(SourceLexState* state) {
         }
 
         // adds the period
-        if (index < MAX_STR_LEN) {
+        if (index < MAX_LEX_LEN) {
             lexemeBuf[index] = state->nextChar;
             index++;
         }
@@ -127,7 +127,7 @@ void lex(SourceLexState* state) {
             exit(1);
         }
         while (isdigit(state->nextChar)) {
-            if (index < MAX_STR_LEN) {
+            if (index < MAX_LEX_LEN) {
                 lexemeBuf[index] = state->nextChar;
                 index++;
             }
@@ -148,10 +148,10 @@ void lex(SourceLexState* state) {
     // if character is a letter enter boolean state
     else if (isalpha(state->nextChar)) {
         // fetch characters while they are letters
-        char lexemeBuf[MAX_STR_LEN] = "\0";
+        char lexemeBuf[MAX_LEX_LEN] = "\0";
         int index = 0;
 
-        if (index < MAX_STR_LEN) {
+        if (index < MAX_LEX_LEN) {
             lexemeBuf[index] = state->nextChar;
             index++;
         }
@@ -162,7 +162,7 @@ void lex(SourceLexState* state) {
 
         state->nextChar = getc(state->source);
         while (isalpha(state->nextChar)) {
-            if (index < MAX_STR_LEN) {
+            if (index < MAX_LEX_LEN) {
                 lexemeBuf[index] = state->nextChar;
                 index++;
             }

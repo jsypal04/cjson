@@ -1,5 +1,6 @@
 #include "cjson.h"
 #include <stdlib.h>
+#include <string.h>
 
 /* Variable to keep track of the depth of the branch of the parse tree that
 the parser is on. For debugging purposes. */
@@ -19,7 +20,7 @@ ObjectAST* parse(const char* sourcePath) {
 }
 
 ObjectAST* parseObject(SourceLexState* state) {
-//    printf("Parsing object (ast depth: %d)...\n", astDepth);
+    printf("Parsing object (ast depth: %d)...\n", astDepth);
 //    scanf("%c\n", &keyboardInput);
     
     if (state->token != LBRACE) {
@@ -39,7 +40,9 @@ ObjectAST* parseObject(SourceLexState* state) {
     }
 
     // otherwise, set the key attribute of obj to the key that was read
-    obj->key = state->lexeme;
+    obj->key = (char*)malloc(sizeof(char) * MAX_LEX_LEN); // We need to allocate memory to store the key in
+    strcpy(obj->key, state->lexeme); // we need to copy the lexeme into the key char* so that they don't reference the same memory
+
     printf("    recorded key: %s\n", obj->key);
 //    scanf("%c", &keyboardInput);
     // get the next lexeme (should be a colon)
@@ -49,11 +52,13 @@ ObjectAST* parseObject(SourceLexState* state) {
         printf("ERROR: object key must be followed by a colon.\n");
         exit(1);
     }
+
     // otherwise, parse the value
     astDepth++;
     ValueAST* value = parseValue(state);
     astDepth--;
     obj->value = value;
+    printf("%s\n", value->lexeme);
 
     lex(state);
 
@@ -63,6 +68,7 @@ ObjectAST* parseObject(SourceLexState* state) {
         NextPairAST* nextPair = parseNextPair(state);
         astDepth--;
         obj->nextPair = nextPair;
+
         return obj;
     }
     // end of object only one entry
@@ -183,7 +189,8 @@ ValueAST* parseValue(SourceLexState* state) {
 //    scanf("%c", &keyboardInput);
     // if the value is a primitive (str, num, bool, or null) simply set the value object's lexeme attribute to it
     if (state->token == STR || state->token == NUM || state->token == BOOL || state->token == NONE) {
-        value->lexeme = state->lexeme;
+        value->lexeme = (char*)malloc(sizeof(char) * MAX_LEX_LEN);
+        strcpy(value->lexeme, state->lexeme);
         value->array = NULL;
         value->obj = NULL;
         // lex to get the next unprocessed state
