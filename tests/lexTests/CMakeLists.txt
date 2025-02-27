@@ -8,5 +8,5 @@ add_executable(lexTest1
 )
 
 target_link_libraries(lexTest1
-    /home/sypalj/cjson/build/libcjson.a
+    ${CMAKE_SOURCE_DIR}/../../build/libcjson.a
 )

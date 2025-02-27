@@ -8,5 +8,5 @@ add_executable(parserTest1
 )
 
 target_link_libraries(parserTest1
-    /home/sypalj/cjson/build/libcjson.a
+    ${CMAKE_SOURCE_DIR}/../../build/libcjson.a
 )
