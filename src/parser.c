@@ -58,7 +58,6 @@ ObjectAST* parseObject(SourceLexState* state) {
     ValueAST* value = parseValue(state);
     astDepth--;
     obj->value = value;
-    printf("%s\n", value->lexeme);
 
     lex(state);
 
@@ -98,6 +97,9 @@ ArrayAST* parseArray(SourceLexState* state) {
     astDepth++;
     ValueAST* value = parseValue(state);
     astDepth--;
+
+    array->value = value;
+
     // get the next unprocessed state
     lex(state);
     // if the lexeme is a comma, there is another value to parse
@@ -139,7 +141,9 @@ NextPairAST* parseNextPair(SourceLexState* state) {
         printf("ERROR: object key must be a string.\n");
         exit(1);
     }
-    nextPair->key = state->lexeme;
+    nextPair->key = (char*)malloc(sizeof(char) * MAX_LEX_LEN);
+    strcpy(nextPair->key, state->lexeme);
+
     printf("    recorded key: %s\n", nextPair->key);
 //    scanf("%c", &keyboardInput);
     lex(state);
