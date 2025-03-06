@@ -1,14 +1,25 @@
 #include <string.h>
 #include "cjson.h"
 
+// Hashing function for the map
+unsigned long hash(char* key, int mapCap) {
+    unsigned long hashcode = 11;
 
-int hash();
+    int i = 0;
+    while (key[i] != '\0') {
+        unsigned int intrep = (unsigned int)key[i];
+        hashcode = (hashcode * 139 + intrep) % mapCap;
+        i++;
+    }
+    return hashcode;
+}
 
-Map* initMap() {
+
+Map* initMap(int initMapCap) {
     Map* map = (Map*)malloc(sizeof(Map));
     map->size = 0;
-    map->mapCap = INIT_MAP_CAP;
-    for (int i = 0; i < INIT_MAP_CAP; i++) {
+    map->mapCap = initMapCap;
+    for (int i = 0; i < initMapCap; i++) {
         map->pairs[i] = NULL;
     }
     return map;
@@ -16,19 +27,34 @@ Map* initMap() {
 
 void destroyMap(Map* map) {
     // need to iterate through each element of map->pairs and free memory allocated in each
+    for (int i = 0; i < map->size; i++) {
+        free(map->pairs[i]);
+        map->pairs[i] = NULL;
+    }
+    free(map);
+    map = NULL;
 }
 
 
-int insert(Map* map, char* key, void* value) {
-    if (map->size >= INIT_MAP_CAP) {
-        return 1;
+void insert(Map* map, char* key, void* value) {
+    if (map->size >= map->mapCap / 2) {
+        // allocate more memory
+        // copy existing map to new map
+        // destroy 
+        return;
     }
 
     KeyValuePair* pair = (KeyValuePair*)malloc(sizeof(KeyValuePair));
+    unsigned long hashcode = hash(key, map->mapCap);
     pair->key = strdup(key);
     pair->value = value;
-    map->pairs[map->size] = pair;
+    map->pairs[hashcode] = pair;
     map->size++;
-    
-    return 0;
+}
+
+
+void* get(Map* map, char* key) {
+    unsigned long hashcode = hash(key, map->mapCap);
+    void* value = map->pairs[hashcode]->value;
+    return value;
 }

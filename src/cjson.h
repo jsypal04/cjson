@@ -121,7 +121,9 @@ typedef struct {
     int mapCap;
 } Map;
 
-Map* initMap(); 
-int insert(Map* map, char* key, void* value);
+Map* initMap(int initMapCap);
+void destroyMap(Map* map);
+void insert(Map* map, char* key, void* value);
+void* get(Map* map, char* key);
 
 #endif
