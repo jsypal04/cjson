@@ -137,6 +137,8 @@ int main(int argc, char* argv[]) {
         }
     }
 
+    destroyAST(ast);
+
     if (passed) {
         printf("Parser test 1 passed.\n");
         exit(0);

@@ -25,7 +25,7 @@ typedef enum Token {
 // lexer state type defintion
 typedef struct SourceLexState {
     FILE* source;
-    char nextChar;
+    char  nextChar;
     Token token;
     char* lexeme;
 } SourceLexState;
@@ -45,38 +45,38 @@ The types for each node of the AST for the parser are defined below
 ************************/
 
 // forward AST type definitions
-typedef struct ObjectAST ObjectAST;
-typedef struct NextPairAST NextPairAST;
-typedef struct ValueAST ValueAST;
+typedef struct ObjectAST    ObjectAST;
+typedef struct NextPairAST  NextPairAST;
+typedef struct ValueAST     ValueAST;
 typedef struct NextValueAST NextValueAST;
-typedef struct ArrayAST ArrayAST;
+typedef struct ArrayAST     ArrayAST;
 
 // only one field should be populated, all else null
 struct ValueAST {
-    char* lexeme;
-    ArrayAST* array;
+    char*      lexeme;
+    ArrayAST*  array;
     ObjectAST* obj;
 };
 
 struct NextValueAST {
-    ValueAST* value;
+    ValueAST*     value;
     NextValueAST* nextValue;
 };
 
 struct NextPairAST {
-    char* key;
-    ValueAST* value;
+    char*        key;
+    ValueAST*    value;
     NextPairAST* nextPair;
 };
 
 struct ArrayAST {
-    ValueAST* value;
+    ValueAST*     value;
     NextValueAST* nextValue;
 };
 
 struct ObjectAST {
-    char* key;
-    ValueAST* value;
+    char*        key;
+    ValueAST*    value;
     NextPairAST* nextPair;
 };
 
@@ -88,11 +88,11 @@ one for each node plus a bonus one at the beginning. All functions should return
 state containing the next lexeme to be processed.
 */
 
-ObjectAST* parse(const char* sourcePath);
-ObjectAST* parseObject(SourceLexState* state);
-ArrayAST* parseArray(SourceLexState* state);
-NextPairAST* parseNextPair(SourceLexState* state);
-ValueAST* parseValue(SourceLexState* state);
+ObjectAST*    parse(const char* sourcePath);
+ObjectAST*    parseObject(SourceLexState* state);
+ArrayAST*     parseArray(SourceLexState* state);
+NextPairAST*  parseNextPair(SourceLexState* state);
+ValueAST*     parseValue(SourceLexState* state);
 NextValueAST* parseNextValue(SourceLexState* state);
 
 // destructor for the AST
@@ -102,5 +102,26 @@ void destroyArray(ArrayAST* array);
 void destroyNextPair(NextPairAST* nextPair);
 void destroyValue(ValueAST* value);
 void destroyNextValue(NextValueAST* nextValue);
+
+
+/*
+ * Data Structure to store the JSON data
+ */
+
+#define INIT_MAP_CAP 1000
+
+typedef struct {
+    char* key;
+    void* value;
+} KeyValuePair;
+
+typedef struct {
+    KeyValuePair* pairs[INIT_MAP_CAP];
+    int size;
+    int mapCap;
+} Map;
+
+Map* initMap(); 
+int insert(Map* map, char* key, void* value);
 
 #endif

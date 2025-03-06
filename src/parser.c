@@ -275,6 +275,11 @@ void destroyAST(ObjectAST* root) {
 }
 
 void destroyObject(ObjectAST* obj) {
+    if (obj->key != NULL) {
+        free(obj->key);
+        obj->key = NULL;
+    }
+
     if (obj->value != NULL) {
         destroyValue(obj->value);
         free(obj->value);
@@ -303,6 +308,11 @@ void destroyArray(ArrayAST* array) {
 }
 
 void destroyNextPair(NextPairAST* nextPair) {
+    if (nextPair->key != NULL) {
+        free(nextPair->key);
+        nextPair->key = NULL;
+    }
+
     if (nextPair->value != NULL) {
         destroyValue(nextPair->value);
         free(nextPair->value);
@@ -317,6 +327,11 @@ void destroyNextPair(NextPairAST* nextPair) {
 }
 
 void destroyValue(ValueAST* value) {
+    if (value->lexeme != NULL) {
+        free(value->lexeme);
+        value->lexeme = NULL;
+    }
+
     if (value->obj != NULL) {
         destroyObject(value->obj);
         free(value->obj);
