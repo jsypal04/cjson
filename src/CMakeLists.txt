@@ -5,4 +5,5 @@ project(cjson)
 add_library(cjson
     lexer.c
     parser.c
+    map.c
 )

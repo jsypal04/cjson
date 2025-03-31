@@ -17,44 +17,48 @@ unsigned long hash(char* key, int mapCap) {
 
 Map* initMap(int initMapCap) {
     Map* map = (Map*)malloc(sizeof(Map));
+    KeyValuePair* keyValuePairArr = malloc(sizeof(KeyValuePair) * initMapCap);
+    map->pairs = keyValuePairArr;
     map->size = 0;
     map->mapCap = initMapCap;
-    for (int i = 0; i < initMapCap; i++) {
-        map->pairs[i] = NULL;
-    }
     return map;
 }
 
 void destroyMap(Map* map) {
     // need to iterate through each element of map->pairs and free memory allocated in each
-    for (int i = 0; i < map->size; i++) {
-        free(map->pairs[i]);
-        map->pairs[i] = NULL;
-    }
+    free(map->pairs);
+    map->pairs = NULL;
+
     free(map);
     map = NULL;
 }
 
 
-void insert(Map* map, char* key, void* value) {
+void insert(Map* map, char* key, void* value, char type) {
     if (map->size >= map->mapCap / 2) {
-        // allocate more memory
-        // copy existing map to new map
-        // destroy 
+        // TODO: Implement capacity expansion
+        //     allocate more memory
+        //     copy existing map to new map
+        //     destroy destroy old map 
         return;
     }
 
-    KeyValuePair* pair = (KeyValuePair*)malloc(sizeof(KeyValuePair));
+    KeyValuePair pair;
     unsigned long hashcode = hash(key, map->mapCap);
-    pair->key = strdup(key);
-    pair->value = value;
+    pair.key = strdup(key);
+    pair.value = value;
+    pair.type = type;
     map->pairs[hashcode] = pair;
     map->size++;
+    
+    printf("Value inserted, hashcode of key: %lu\n", hashcode);
 }
 
 
-void* get(Map* map, char* key) {
+void* get(Map* map, char* key, char* type) {
     unsigned long hashcode = hash(key, map->mapCap);
-    void* value = map->pairs[hashcode]->value;
+    
+    *type = map->pairs[hashcode].type;
+    void* value = map->pairs[hashcode].value;
     return value;
 }

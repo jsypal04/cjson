@@ -108,22 +108,37 @@ void destroyNextValue(NextValueAST* nextValue);
  * Data Structure to store the JSON data
  */
 
-#define INIT_MAP_CAP 1000
 
 typedef struct {
     char* key;
     void* value;
+    char type; // can be either s (string), i (int), f (float), b (bool), a (array), o (object)
 } KeyValuePair;
 
 typedef struct {
-    KeyValuePair* pairs[INIT_MAP_CAP];
+    KeyValuePair* pairs;
     int size;
     int mapCap;
 } Map;
 
+// Function to allocate the necessary heap memory for a map with a given initial capacity
 Map* initMap(int initMapCap);
+
+/* Function to free all allocated memory used to create the map 
+ *
+ * PLEASE NOTE: This function does NOT free memory of the values stored in the in the map.
+ *  you must go through the map destroying any values that you allocated and then stored in the map.
+ * */
 void destroyMap(Map* map);
-void insert(Map* map, char* key, void* value);
-void* get(Map* map, char* key);
+
+// Function to insert a value with a given key and type into the map
+void insert(Map* map, char* key, void* value, char type);
+
+/* Function to retrieve the value mapped to a given key 
+ *
+ * The `type` parameter is the address where the type of the retrieved value will be stored.
+ * You must use it to cast the void* to the correct type after the value has been retrieved.
+ * */
+void* get(Map* map, char* key, char* type);
 
 #endif
