@@ -107,12 +107,17 @@ void destroyNextValue(NextValueAST* nextValue);
 /*
  * Data Structure to store the JSON data
  */
-
+#define STRING 's'
+#define INT    'i'
+#define FLOAT  'f'
+#define BOOL   'b'
+#define ARRAY  'a'
+#define MAP    'm'
 
 typedef struct {
     char* key;
     void* value;
-    char type; // can be either s (string), i (int), f (float), b (bool), a (array), o (object)
+    char type; // can be either s (string), i (int), f (float), b (bool), a (array), m (map)
 } KeyValuePair;
 
 typedef struct {
@@ -131,8 +136,10 @@ Map* initMap(int initMapCap);
  * */
 void destroyMap(Map* map);
 
-// Function to insert a value with a given key and type into the map
-void insert(Map* map, char* key, void* value, char type);
+// Functions to insert a value with a given key and type into the map
+void insertInt(   Map* map, char* key, int   value);
+void insertFloat( Map* map, char* key, float value);
+void insertString(Map* map, char* kay, char* value);
 
 /* Function to retrieve the value mapped to a given key 
  *
@@ -140,5 +147,6 @@ void insert(Map* map, char* key, void* value, char type);
  * You must use it to cast the void* to the correct type after the value has been retrieved.
  * */
 void* get(Map* map, char* key, char* type);
+
 
 #endif
