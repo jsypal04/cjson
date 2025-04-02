@@ -15,26 +15,38 @@ I am building this on linux but, out of the goodness of my heart, am considering
 
 ## File Structure
 
-The folder structure of the project is as follows:
+The file structure of the project is as follows:
 
 - **root**
   - **src**
     - C source files for the project
   - **tests**
     - **bin**
-      - binary files for all unit tests
+      - binary files for all unit tests (probably will gitignore these at some point)
     - **jsonSrc**
       - json source files for all unit tests
     - **lexTests**
       - C source code for lexer unit tests
     - **parserTests**
       - C source code for parser unit tests
+    - **mapTests**
+      - C source code for map unit tests 
     - test.sh (script to run unit tests)
-  - build.sh (script to build the entire project including unit tests)
+  - build.sh (script to build the entire project including unit tests) (I never use this).
 
 There are two main directories: src, and tests. src contains the project's source code. tests contains unit tests written in C with a bash script
 to run one or all of them. The tests directory also contains a bin directory for the unit test executables that the bash script will run.
 
 ## Building From Source
 
-I'll deal with this later
+You may be able to simply run `build.sh` but I honestly don't know if it still works.
+
+1. Clone the repo
+2. Make a **build** directory
+3. From the root directory run `cmake -S src -B path/to/build`
+4. From the root directory run `cmake --build path/to/build`
+5. Make a **build** for each of the **__Tests** directories
+6. For each directory made in step 5, run `cmake -S tests/__Tests -B path/to/build`
+7. For each directory made in step 5, run `cmake --build path/to/build`
+
+To use this, you need two files: `cjson.h` (in the src directory) and (on linux) `libcjson.a` (in the main build directory).
