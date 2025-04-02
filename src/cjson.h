@@ -128,6 +128,7 @@ typedef struct {
 
 // Function to allocate the necessary heap memory for a map with a given initial capacity
 Map* initMap(int initMapCap);
+unsigned long hash(char* key, int mapCap);
 
 /* Function to free all allocated memory used to create the map 
  *
@@ -148,5 +149,6 @@ void insertString(Map* map, char* kay, char* value);
  * */
 void* get(Map* map, char* key, char* type);
 
+void printMap(Map* map);
 
 #endif

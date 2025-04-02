@@ -54,7 +54,7 @@ void destroyMap(Map* map) {
 }
 
 void insert(Map* map, char* key, void* value, char type) {
-    if (map->size >= map->mapCap / 2) {
+    /* if (map->size >= map->mapCap / 2) {
         // TODO: Implement capacity expansion
         //     allocate more memory
         //     copy existing map to new map
@@ -77,7 +77,7 @@ void insert(Map* map, char* key, void* value, char type) {
 
         destroyMap(map);
         map = biggerMap;
-    }
+    } */
 
     KeyValuePair pair;
     unsigned long hashcode = hash(key, map->mapCap);
@@ -123,4 +123,29 @@ void* get(Map* map, char* key, char* type) {
     *type = map->pairs[hashcode].type;
     void* value = map->pairs[hashcode].value;
     return value;
+}
+
+void printMap(Map* map) {
+    printf("------------------------\n");
+    for (int i = 0; i < map->mapCap; i++) {
+        char type = map->pairs[i].type;
+        switch (type) {
+            case STRING: {
+                printf("%s: %s\n", map->pairs[i].key, (char*)map->pairs[i].value);
+                break;
+            }
+            case INT: {
+                printf("%s: %d\n", map->pairs[i].key, *(int*)map->pairs[i].value);
+                break;
+            }
+            case FLOAT: { 
+                printf("%s: %f\n", map->pairs[i].key, *(float*)map->pairs[i].value);
+                break;
+            }
+            default: {
+                printf("Empty map slot.\n");
+            }
+        }
+    }
+    printf("------------------------\n");
 }

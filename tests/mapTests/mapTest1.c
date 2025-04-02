@@ -20,29 +20,6 @@
 #define TEST_ARR_LEN 3
 
 
-void printMap(Map* map) {
-    for (int i = 0; i < map->mapCap; i++) {
-        char type = map->pairs[i].type;
-        switch (type) {
-            case STRING: {
-                printf("%s: %s\n", map->pairs[i].key, (char*)map->pairs[i].value);
-                break;
-            }
-            case INT: {
-                printf("%s: %d\n", map->pairs[i].key, *(int*)map->pairs[i].value);
-                break;
-            }
-            case FLOAT: { 
-                printf("%s: %f\n", map->pairs[i].key, *(float*)map->pairs[i].value);
-                break;
-            }
-            default: {
-                printf("Empty map slot.\n");
-            }
-        }
-    }
-    printf("------------------------\n");
-}
 
 /* Map* makeMap() {
     Map* map = initMap(20);
@@ -72,7 +49,7 @@ int main(int argc, char *argv[]) {
 } */
 
 int main(int argc, char *argv[]) {
-    Map* map = initMap(20);     
+    Map* map = initMap(40);     
     printf("Successfully created a new Map\n");
 
     char* keys[] = { "main1", "main2", "main3", "table", "chair", "stool", "bench", "couch", "bed" };
