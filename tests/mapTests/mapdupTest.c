@@ -20,5 +20,7 @@ int main(int argc, char* argv[]) {
 
     printMap(outer_map);
 
+    destroyMap(outer_map);
+
     return EXIT_SUCCESS;
 }

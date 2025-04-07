@@ -6,4 +6,5 @@ add_library(cjson
     lexer.c
     parser.c
     map.c
+    load.c
 )

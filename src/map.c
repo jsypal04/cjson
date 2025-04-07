@@ -37,8 +37,13 @@ void destroyMap(Map* map) {
             map->pairs[i].key = NULL;
         }
         if (map->pairs[i].value != NULL) {
-            free(map->pairs[i].value);
-            map->pairs[i].value = NULL;
+            if (map->pairs[i].type != MAP) {
+                free(map->pairs[i].value);
+                map->pairs[i].value = NULL;
+            }
+            else {
+                destroyMap((Map*)map->pairs[i].value);
+            }
         }
     }
 

@@ -158,4 +158,10 @@ void* get(Map* map, char* key, char* type);
 
 void printMap(Map* map);
 
+
+/* 
+ * Functions to load json parsed by the parser into a Map
+ * */
+Map* load_file(const char* path);
+
 #endif
