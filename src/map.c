@@ -27,6 +27,8 @@ Map* initMap(int initMapCap) {
     return map;
 }
 
+
+// TODO: Implement way to destroy nested maps. This function will probably result in memory leaks right now.
 void destroyMap(Map* map) {
     // need to iterate through each element of map->pairs and free memory allocated in each
     for (int i = 0; i < map->mapCap; i++) {
@@ -230,28 +232,27 @@ void* get(Map* map, char* key, char* type) {
     return NULL;
 }
 
-void printMap_helper(Map* map, char* leader) {
+void printMap(Map* map) {
     printf("------------------------\n");
     for (int i = 0; i < map->mapCap; i++) {
         char type = map->pairs[i].type;
         
         switch (type) {
             case STRING: {
-                printf("%s%s: %s\n", leader, map->pairs[i].key, (char*)map->pairs[i].value);
+                printf("%s: %s\n", map->pairs[i].key, (char*)map->pairs[i].value);
                 break;
             }
             case INT: {
-                printf("%s%s: %d\n", leader, map->pairs[i].key, *(int*)map->pairs[i].value);
+                printf("%s: %d\n", map->pairs[i].key, *(int*)map->pairs[i].value);
                 break;
             }
             case FLOAT: { 
-                printf("%s%s: %f\n", leader, map->pairs[i].key, *(float*)map->pairs[i].value);
+                printf("%s: %f\n", map->pairs[i].key, *(float*)map->pairs[i].value);
                 break;
             }
             case MAP: {
-                // printf("Running printMap_helper, leader=%s", leader);
-                // strcat(leader, leader);
-                printMap_helper(map, leader); 
+                printf("%s:\n", map->pairs[i].key);
+                printMap((Map*)map->pairs[i].value); 
             }
 
         }
@@ -259,6 +260,3 @@ void printMap_helper(Map* map, char* leader) {
     printf("------------------------\n");
 }
 
-void printMap(Map* map) {
-    printMap_helper(map, "");    
-}
