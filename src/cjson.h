@@ -105,7 +105,7 @@ void destroyNextValue(NextValueAST* nextValue);
 
 
 /*
- * Data Structure to store the JSON data
+ * Data Structure to store the JSON data (An ordered map)
  */
 #define STRING 's'
 #define INT    'i'
@@ -128,7 +128,6 @@ typedef struct {
 
 // Function to allocate the necessary heap memory for a map with a given initial capacity
 Map* initMap(int initMapCap);
-unsigned long hash(char* key, int mapCap);
 
 /* Function to free all allocated memory used to create the map 
  *
@@ -137,10 +136,18 @@ unsigned long hash(char* key, int mapCap);
  * */
 void destroyMap(Map* map);
 
+/*
+ * Duplicates `source` and returns a pointer to the new map. 
+ * - `source` is not destroyed, the caller still needs to destroy it.
+ * - NOTE: If a nested map is encountered, need to use recursion.
+ * */
+Map* mapdup(Map* source);
+
 // Functions to insert a value with a given key and type into the map
-void insertInt(   Map* map, char* key, int   value);
-void insertFloat( Map* map, char* key, float value);
-void insertString(Map* map, char* kay, char* value);
+void insertInt(   Map** map_ref, char* key, int   value);
+void insertFloat( Map** map_ref, char* key, float value);
+void insertString(Map** map_ref, char* key, char* value);
+void insertMap(   Map** map_ref, char* key, Map*  value);
 
 /* Function to retrieve the value mapped to a given key 
  *

@@ -12,10 +12,13 @@ target_link_libraries(mapTest1
     ${CMAKE_SOURCE_DIR}/../../build/libcjson.a
 )
 
-add_executable(mapTest2
-    mapTest2.c
+
+add_executable(mapdupTest
+    mapdupTest.c
 )
 
-target_link_libraries(mapTest2
+target_link_libraries(mapdupTest
     ${CMAKE_SOURCE_DIR}/../../build/libcjson.a
 )
+    
+

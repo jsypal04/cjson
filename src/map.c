@@ -5,21 +5,11 @@
  * */
 
 
+#include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
+#include <assert.h>
 #include "cjson.h"
-
-// Hashing function for the map
-unsigned long hash(char* key, int mapCap) {
-    unsigned long hashcode = 11;
-
-    int i = 0;
-    while (key[i] != '\0') {
-        unsigned int intrep = (unsigned int)key[i];
-        hashcode = (hashcode * 139 + intrep) % mapCap;
-        i++;
-    }
-    return hashcode;
-}
 
 
 Map* initMap(int initMapCap) {
@@ -40,6 +30,10 @@ Map* initMap(int initMapCap) {
 void destroyMap(Map* map) {
     // need to iterate through each element of map->pairs and free memory allocated in each
     for (int i = 0; i < map->mapCap; i++) {
+        if (map->pairs[i].key != NULL) {
+            free(map->pairs[i].key);
+            map->pairs[i].key = NULL;
+        }
         if (map->pairs[i].value != NULL) {
             free(map->pairs[i].value);
             map->pairs[i].value = NULL;
@@ -53,99 +47,218 @@ void destroyMap(Map* map) {
     map = NULL;
 }
 
-void insert(Map* map, char* key, void* value, char type) {
-    /* if (map->size >= map->mapCap / 2) {
-        // TODO: Implement capacity expansion
-        //     allocate more memory
-        //     copy existing map to new map
-        //     destroy destroy old map 
+/*
+ * Duplicates `source` and returns a pointer to the new map. 
+ * - `source` is not destroyed, the caller still needs to destroy it.
+ * - NOTE: If a nested map is encountered, need to use recursion.
+ * */
+Map* mapdup(Map* source) {
+    Map* copy = initMap(source->mapCap);
 
-        printf("Expanding the map.\n");
-        Map* biggerMap = initMap(map->mapCap * 2);
-        for (int i = 0; i < map->mapCap; i++) {
-            if (map->pairs[i].value == NULL) {
-                continue;
-            }
+    for (int i = 0; i < source->size; i++) {
+        KeyValuePair pair;
+        pair.key = strdup(source->pairs[i].key);
+        pair.type = source->pairs[i].type;
 
-            KeyValuePair pair;
-            unsigned long hashcode = hash(map->pairs[i].key, biggerMap->mapCap);
-            pair.key = map->pairs[i].key;
-            pair.value = map->pairs[i].value;
-            biggerMap->pairs[hashcode] = pair;
-            biggerMap->size++;
-        }
-
-        destroyMap(map);
-        map = biggerMap;
-    } */
-
-    KeyValuePair pair;
-    unsigned long hashcode = hash(key, map->mapCap);
-
-    if (map->pairs[hashcode].value != NULL) {
-        pair.key = strdup(key);
-        pair.value = value;
-        pair.type = type;
-        map->pairs[hashcode] = pair;
-    }
-    else {
-        pair.key = strdup(key);
-        pair.value = value;
-        pair.type = type;
-        map->pairs[hashcode] = pair;
-        map->size++;
-    }
-    
-    printf("Value inserted, hashcode of key: %lu\n", hashcode);
-}
-
-void insertInt(Map* map, char* key, int value) {
-    int* val = malloc(sizeof(int));
-    *val = value;
-    insert(map, key, val, INT);
-}
-
-void insertFloat(Map* map, char* key, float value) {
-    float* val = malloc(sizeof(float));
-    *val = value;
-    insert(map, key, val, FLOAT);
-}
-
-void insertString(Map* map, char* key, char* value) {
-    int length = strlen(value);
-    char* val = strdup(value);
-    insert(map, key, val, STRING);
-}
-
-void* get(Map* map, char* key, char* type) {
-    unsigned long hashcode = hash(key, map->mapCap);
-    
-    *type = map->pairs[hashcode].type;
-    void* value = map->pairs[hashcode].value;
-    return value;
-}
-
-void printMap(Map* map) {
-    printf("------------------------\n");
-    for (int i = 0; i < map->mapCap; i++) {
-        char type = map->pairs[i].type;
-        switch (type) {
+        switch (source->pairs[i].type) {
             case STRING: {
-                printf("%s: %s\n", map->pairs[i].key, (char*)map->pairs[i].value);
+                pair.value = strdup((char*)source->pairs[i].value);
                 break;
             }
             case INT: {
-                printf("%s: %d\n", map->pairs[i].key, *(int*)map->pairs[i].value);
+                int* val_cpy = malloc(sizeof(int));
+                *val_cpy = *(int*)source->pairs[i].value;
+                pair.value = val_cpy;
+                break;
+            }
+            case FLOAT: {
+                float* val_cpy = malloc(sizeof(float));
+                *val_cpy = *(float*)source->pairs[i].value;
+                pair.value = val_cpy;
+                break;
+            }
+            case MAP: {
+                pair.value = mapdup((Map*)source->pairs[i].value);
+                break;
+            }
+        }
+        copy->pairs[i] = pair;
+        copy->size++;
+    }
+    return copy;
+}
+
+Map* insert(Map* map, char* key, void* value, char type) {
+    assert(map->size <= map->mapCap);
+
+    if (map->size == map->mapCap) {
+        // expand the map:
+
+        Map* bigger_map = mapdup(map);
+
+        // 3. destroy old map
+        destroyMap(map);
+        map = NULL;
+
+        // Add new value
+
+        KeyValuePair pair;
+        pair.key = strdup(key);
+        pair.type = type;
+
+        switch (type) {
+            case STRING: {
+                pair.value = strdup(value);
+                break;
+            }
+            case INT: {
+                int* val_cpy = malloc(sizeof(int));
+                *val_cpy = *(int*)value;
+                pair.value = val_cpy;
+                break;
+            }
+            case FLOAT: {
+                float* val_cpy = malloc(sizeof(float));
+                *val_cpy = *(float*)value;
+                pair.value = val_cpy;
+                break;
+            }
+            case MAP: {
+                Map* val_cpy = mapdup((Map*)value);
+                pair.value = val_cpy;
+                break;
+            }
+        }
+        bigger_map->pairs[bigger_map->size] = pair;
+        bigger_map->size++;
+        
+        return bigger_map;
+    }
+
+    KeyValuePair pair;
+    pair.key = strdup(key);
+    pair.type = type;
+
+//    printf("%s\n", (char*)value);
+    
+    switch (type) {
+        case STRING: {
+            pair.value = strdup((char*)value);
+            break;
+        }
+        case INT: {
+            int* val_cpy = malloc(sizeof(int));
+            *val_cpy = *(int*)value;
+            pair.value = val_cpy;
+            break;
+        }
+        case FLOAT: {
+            float* val_cpy = malloc(sizeof(float));
+            *val_cpy = *(float*)value;
+            pair.value = val_cpy;
+            break;
+        }
+        case MAP: {
+            Map* val_cpy = mapdup((Map*)value);
+            pair.value = val_cpy;
+            break;
+        }
+    }
+
+    map->pairs[map->size] = pair;
+    map->size++;
+
+    return NULL;
+}
+
+void insertInt(Map** map_ref, char* key, int value) {
+    // printf("Address in map_ref (typed insert function 1): %x\n", *map_ref);
+    int* val = malloc(sizeof(int));
+    *val = value;
+    Map* result = insert(*map_ref, key, val, INT);
+
+    if (result == NULL) { return; }
+
+    *map_ref = result;
+
+    // printf("Address in map_ref (typed insert function 2): %x\n", *map_ref);
+}
+
+void insertFloat(Map** map_ref, char* key, float value) {
+    // printf("Address in map_ref (typed insert function 1): %x\n", *map_ref);
+    float* val = malloc(sizeof(float));
+    *val = value;
+    Map* result = insert(*map_ref, key, val, FLOAT);
+    
+    if (result == NULL) { return; }
+
+    *map_ref = result;
+
+    // printf("Address in map_ref (typed insert function 2): %x\n", *map_ref);
+}
+
+void insertString(Map** map_ref, char* key, char* value) {
+//    char* val = strdup(value); // MIGHT ACTUALLY NEED THIS LINE. I'M NOT SURE.
+    Map* result = insert(*map_ref, key, value, STRING);
+
+    if (result == NULL) { return; }
+
+    *map_ref = result;
+    // printf("Address in map_ref (typed insert function 2): %x\n", *map_ref);
+}
+
+void insertMap(Map** map_ref, char* key, Map* value) {
+    Map* result = insert(*map_ref, key, value, MAP);
+
+    if (result == NULL) { return; }
+
+    *map_ref = result;
+}
+
+void* get(Map* map, char* key, char* type) {
+    assert(map->size <= map->mapCap);
+
+    for (int i = 0; i < map->size; i++) {
+        if (strcmp(map->pairs[i].key, key) == 0) {
+            printf("Found key %s in map\n", key);
+            *type = map->pairs[i].type;
+            return map->pairs[i].value;
+        }
+    }
+
+    *type = '\0';
+    return NULL;
+}
+
+void printMap_helper(Map* map, char* leader) {
+    printf("------------------------\n");
+    for (int i = 0; i < map->mapCap; i++) {
+        char type = map->pairs[i].type;
+        
+        switch (type) {
+            case STRING: {
+                printf("%s%s: %s\n", leader, map->pairs[i].key, (char*)map->pairs[i].value);
+                break;
+            }
+            case INT: {
+                printf("%s%s: %d\n", leader, map->pairs[i].key, *(int*)map->pairs[i].value);
                 break;
             }
             case FLOAT: { 
-                printf("%s: %f\n", map->pairs[i].key, *(float*)map->pairs[i].value);
+                printf("%s%s: %f\n", leader, map->pairs[i].key, *(float*)map->pairs[i].value);
                 break;
             }
-            default: {
-                printf("Empty map slot.\n");
+            case MAP: {
+                // printf("Running printMap_helper, leader=%s", leader);
+                // strcat(leader, leader);
+                printMap_helper(map, leader); 
             }
+
         }
     }
     printf("------------------------\n");
+}
+
+void printMap(Map* map) {
+    printMap_helper(map, "");    
 }
