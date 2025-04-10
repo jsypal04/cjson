@@ -117,7 +117,7 @@ void destroyNextValue(NextValueAST* nextValue);
 typedef struct {
     char* key;
     void* value;
-    char type; // can be either s (string), i (int), f (float), b (bool), a (array), m (map)
+    char type; // can be either s (string), i (int), f (float), b (bool), a (), m (map)
 } KeyValuePair;
 
 typedef struct {
@@ -125,6 +125,17 @@ typedef struct {
     int size;
     int mapCap;
 } Map;
+
+typedef struct {
+    void* value;
+    char type;
+} Element;
+
+typedef struct {
+    Element* array;
+    int size;
+    int cap;
+} MapArray;
 
 // Function to allocate the necessary heap memory for a map with a given initial capacity
 Map* initMap(int initMapCap);
@@ -143,11 +154,25 @@ void destroyMap(Map* map);
  * */
 Map* mapdup(Map* source);
 
+// Function to allocate the necessary heap memory for an array with a given initial capacity
+MapArray* initMapArray(int arr_cap);
+void destroyMapArray(MapArray* array);
+void printMapArray(MapArray* array);
+
+// Functions to insert values into an array
+void appendInt(     MapArray** arr_ref, int       value);
+void appendFloat(   MapArray** arr_ref, float     value);
+void appendString(  MapArray** arr_ref, char*     value);
+void appendMap(     MapArray** arr_ref, Map*      value);
+void appendMapArray(MapArray** arr_ref, MapArray* value);
+
+
 // Functions to insert a value with a given key and type into the map
 void insertInt(   Map** map_ref, char* key, int   value);
 void insertFloat( Map** map_ref, char* key, float value);
 void insertString(Map** map_ref, char* key, char* value);
 void insertMap(   Map** map_ref, char* key, Map*  value);
+// void insertArray( Map** map_ref, char* key, )
 
 /* Function to retrieve the value mapped to a given key
  *

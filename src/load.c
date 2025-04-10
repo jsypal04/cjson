@@ -127,6 +127,8 @@ void traverse_npair(NextPairAST* npair, Map* json_data) {
 }
 
 char traverse_val(ValueAST* val) {
+    assert(val->lexeme != NULL || val->array != NULL || val->obj != NULL);
+
     if (val->lexeme != NULL) {
         if (is_int(val->lexeme)) {
             return INT;
@@ -139,16 +141,10 @@ char traverse_val(ValueAST* val) {
         }
     }
     else if (val->array != NULL) {
-        // Do something else
         return ARRAY;
     }
-    else if (val->obj != NULL) {
-        // Do something even elser
-        return MAP;
-    }
     else {
-        // There was a parsing error that was not caught
-        return '\0';
+        return MAP;
     }
 }
 

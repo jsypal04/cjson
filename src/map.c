@@ -1,5 +1,5 @@
 /*
- * NOTE to self: It is very possible that when the map capacity needs to be expanded, the map variable passed 
+ * NOTE to self: It is very possible that when the map capacity needs to be expanded, the map variable passed
  * by the caller of `insert` might lose access to the map when I destroy it. I do re-assign it to `biggerMap`
  * but there might be some weird stuff going on with stack and heap memory that i'm not aware of.
  * */
@@ -28,10 +28,11 @@ Map* initMap(int initMapCap) {
 }
 
 
+
 // TODO: Implement way to destroy nested maps. This function will probably result in memory leaks right now.
 void destroyMap(Map* map) {
     // need to iterate through each element of map->pairs and free memory allocated in each
-    for (int i = 0; i < map->mapCap; i++) {
+    for (int i = 0; i < map->size; i++) {
         if (map->pairs[i].key != NULL) {
             free(map->pairs[i].key);
             map->pairs[i].key = NULL;
@@ -55,7 +56,7 @@ void destroyMap(Map* map) {
 }
 
 /*
- * Duplicates `source` and returns a pointer to the new map. 
+ * Duplicates `source` and returns a pointer to the new map.
  * - `source` is not destroyed, the caller still needs to destroy it.
  * - NOTE: If a nested map is encountered, need to use recursion.
  * */
@@ -112,65 +113,20 @@ Map* insert(Map* map, char* key, void* value, char type) {
         KeyValuePair pair;
         pair.key = strdup(key);
         pair.type = type;
+        pair.value = value;
 
-        switch (type) {
-            case STRING: {
-                pair.value = strdup(value);
-                break;
-            }
-            case INT: {
-                int* val_cpy = malloc(sizeof(int));
-                *val_cpy = *(int*)value;
-                pair.value = val_cpy;
-                break;
-            }
-            case FLOAT: {
-                float* val_cpy = malloc(sizeof(float));
-                *val_cpy = *(float*)value;
-                pair.value = val_cpy;
-                break;
-            }
-            case MAP: {
-                Map* val_cpy = mapdup((Map*)value);
-                pair.value = val_cpy;
-                break;
-            }
-        }
         bigger_map->pairs[bigger_map->size] = pair;
         bigger_map->size++;
-        
+
         return bigger_map;
     }
 
     KeyValuePair pair;
     pair.key = strdup(key);
     pair.type = type;
+    pair.value = value;
 
 //    printf("%s\n", (char*)value);
-    
-    switch (type) {
-        case STRING: {
-            pair.value = strdup((char*)value);
-            break;
-        }
-        case INT: {
-            int* val_cpy = malloc(sizeof(int));
-            *val_cpy = *(int*)value;
-            pair.value = val_cpy;
-            break;
-        }
-        case FLOAT: {
-            float* val_cpy = malloc(sizeof(float));
-            *val_cpy = *(float*)value;
-            pair.value = val_cpy;
-            break;
-        }
-        case MAP: {
-            Map* val_cpy = mapdup((Map*)value);
-            pair.value = val_cpy;
-            break;
-        }
-    }
 
     map->pairs[map->size] = pair;
     map->size++;
@@ -196,7 +152,7 @@ void insertFloat(Map** map_ref, char* key, float value) {
     float* val = malloc(sizeof(float));
     *val = value;
     Map* result = insert(*map_ref, key, val, FLOAT);
-    
+
     if (result == NULL) { return; }
 
     *map_ref = result;
@@ -205,7 +161,7 @@ void insertFloat(Map** map_ref, char* key, float value) {
 }
 
 void insertString(Map** map_ref, char* key, char* value) {
-//    char* val = strdup(value); // MIGHT ACTUALLY NEED THIS LINE. I'M NOT SURE.
+    char* val = strdup(value); // MIGHT ACTUALLY NEED THIS LINE. I'M NOT SURE.
     Map* result = insert(*map_ref, key, value, STRING);
 
     if (result == NULL) { return; }
@@ -241,7 +197,7 @@ void printMap(Map* map) {
     printf("------------------------\n");
     for (int i = 0; i < map->mapCap; i++) {
         char type = map->pairs[i].type;
-        
+
         switch (type) {
             case STRING: {
                 printf("%s: %s\n", map->pairs[i].key, (char*)map->pairs[i].value);
@@ -251,13 +207,13 @@ void printMap(Map* map) {
                 printf("%s: %d\n", map->pairs[i].key, *(int*)map->pairs[i].value);
                 break;
             }
-            case FLOAT: { 
+            case FLOAT: {
                 printf("%s: %f\n", map->pairs[i].key, *(float*)map->pairs[i].value);
                 break;
             }
             case MAP: {
                 printf("%s:\n", map->pairs[i].key);
-                printMap((Map*)map->pairs[i].value); 
+                printMap((Map*)map->pairs[i].value);
             }
 
         }
@@ -265,3 +221,87 @@ void printMap(Map* map) {
     printf("------------------------\n");
 }
 
+MapArray* initMapArray(int arr_cap) {
+    MapArray* arr = malloc(sizeof(MapArray));
+    arr->cap = arr_cap;
+    arr->size = 0;
+
+    Element* elements = malloc(sizeof(Element) * arr_cap);
+    arr->array = elements;
+
+    return arr;
+}
+
+void destroyMapArray(MapArray *array) {
+    for (int i = 0; i < array->size; i++){
+        if (array->array[i].value != NULL) {
+            free(array->array[i].value);
+            array->array[i].value = NULL;
+        }
+    }
+
+    free(array->array);
+    array->array = NULL;
+
+    free(array);
+    array = NULL;
+}
+
+MapArray* append(MapArray* arr, void* value, char type) {
+    assert(arr->size <= arr->cap);
+
+    if (arr->size == arr->cap) {
+        // Expand array
+        return NULL;
+    }
+
+    Element element;
+    element.value = value;
+    element.type = type;
+
+    arr->array[arr->size] = element;
+    arr->size++;
+
+    return NULL;
+}
+
+void appendInt(MapArray** arr_ref, int value) {
+    int* val_cpy = malloc(sizeof(int));
+    *val_cpy = value;
+
+    append(*arr_ref, val_cpy, INT);
+}
+
+void appendFloat(MapArray** arr_ref, float value) {
+    float* val_cpy = malloc(sizeof(float));
+    *val_cpy = value;
+
+    append(*arr_ref, val_cpy, FLOAT);
+}
+
+void appendString(MapArray** arr_ref, char* value) {
+    char* val_cpy = strdup(value);
+    append(*arr_ref, val_cpy, STRING);
+}
+
+void printMapArray(MapArray* array) {
+    for (int i = 0; i < array->size; i++) {
+        switch (array->array[i].type) {
+            case INT: {
+                printf("  [ %d\n", *(int*)array->array[i].value);
+                break;
+            }
+            case FLOAT: {
+                printf("  [ %f\n", *(float*)array->array[i].value);
+                break;
+            }
+            case STRING: {
+                printf("  [ %s\n", (char*)array->array[i].value);
+                break;
+            }
+            default: {
+                printf("Not handling this case yet\n");
+            }
+        }
+    }
+}

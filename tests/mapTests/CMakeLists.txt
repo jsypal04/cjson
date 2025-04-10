@@ -20,5 +20,11 @@ add_executable(mapdupTest
 target_link_libraries(mapdupTest
     ${CMAKE_SOURCE_DIR}/../../build/libcjson.a
 )
-    
 
+add_executable(arrTest1
+    arrTest1.c
+)
+
+target_link_libraries(arrTest1
+    ${CMAKE_SOURCE_DIR}/../../build/libcjson.a
+)

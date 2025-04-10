@@ -2,7 +2,7 @@
 
 1. Make it so that the map capacity expansion does not cause a seg fault.
 2. Implement actual unit tests for Map. Some cases I need to test:
-    
+
     1. Capacity expansion
     3. Retrieving non-existant keys
     4. Map destruction
@@ -14,11 +14,9 @@
 
 ## Issues:
 
-ISSUE: When I expand the map, I allocate a new, bigger map. I then assign the pointer to the new map to the
-    pointer to the old map. I recently changed all insert functions to require passing the pointer to the map
-    by reference which should mean that I can update the contents and that will be reflected in the caller.
-    That doesn't seem to be happening, the final address of the original map is different than the newly allocated
-    address. Also, since the updates are not reflected, this is vulnerable to bugs like use-after-free and double-free.
+ISSUE: I'm pretty sure I have memory leaks whenever I insert into a map since I malloc the value in insertInt, insertFloat, insertString,
+      and insertMap functions and re-copy (using malloc) again in the insert function. The I don't think the pointers allocated in the
+      upper lever insert functions are ever freed.
 
 
 ## Notes:
