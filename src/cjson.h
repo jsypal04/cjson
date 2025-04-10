@@ -129,7 +129,7 @@ typedef struct {
 // Function to allocate the necessary heap memory for a map with a given initial capacity
 Map* initMap(int initMapCap);
 
-/* Function to free all allocated memory used to create the map 
+/* Function to free all allocated memory used to create the map
  *
  * PLEASE NOTE: This function does NOT free memory of the values stored in the in the map.
  *  you must go through the map destroying any values that you allocated and then stored in the map.
@@ -137,7 +137,7 @@ Map* initMap(int initMapCap);
 void destroyMap(Map* map);
 
 /*
- * Duplicates `source` and returns a pointer to the new map. 
+ * Duplicates `source` and returns a pointer to the new map.
  * - `source` is not destroyed, the caller still needs to destroy it.
  * - NOTE: If a nested map is encountered, need to use recursion.
  * */
@@ -149,7 +149,7 @@ void insertFloat( Map** map_ref, char* key, float value);
 void insertString(Map** map_ref, char* key, char* value);
 void insertMap(   Map** map_ref, char* key, Map*  value);
 
-/* Function to retrieve the value mapped to a given key 
+/* Function to retrieve the value mapped to a given key
  *
  * The `type` parameter is the address where the type of the retrieved value will be stored.
  * You must use it to cast the void* to the correct type after the value has been retrieved.
@@ -159,9 +159,13 @@ void* get(Map* map, char* key, char* type);
 void printMap(Map* map);
 
 
-/* 
+/*
  * Functions to load json parsed by the parser into a Map
  * */
 Map* load_file(const char* path);
+
+Map* traverse_obj(ObjectAST* obj);
+void traverse_npair(NextPairAST* npair, Map* json_data);
+char traverse_val(ValueAST* val);
 
 #endif
