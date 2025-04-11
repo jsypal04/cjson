@@ -1,15 +1,16 @@
 ## List of things to do:
 
-1. Make it so that the map capacity expansion does not cause a seg fault.
-2. Implement actual unit tests for Map. Some cases I need to test:
+1. Implement actual unit tests for Map. Some cases I need to test:
 
     1. Capacity expansion
     3. Retrieving non-existant keys
     4. Map destruction
     5. Creating the map in one scope and returning it to another scope (make sure all data is preserved)
 
-3. Implement functions to load json data from the AST to a Map. (Have not even begun to think about this).
-4. I also probably want to implment some more/actual unit tests for the lexer and parser.
+2. Implement ability to load a json array into the map data structure.
+3. I also probably want to implment some more/actual unit tests for the lexer and parser.
+4. Implement capacity expansion for appending arrays
+5. Store booleans as booleans not as strings
 
 
 ## Issues:
@@ -17,6 +18,7 @@
 ISSUE: I'm pretty sure I have memory leaks whenever I insert into a map since I malloc the value in insertInt, insertFloat, insertString,
       and insertMap functions and re-copy (using malloc) again in the insert function. The I don't think the pointers allocated in the
       upper lever insert functions are ever freed.
+      EDIT: I think I fixed this but I'm going to keep this just to remind myself to test for it later.
 
 
 ## Notes:

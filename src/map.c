@@ -268,23 +268,50 @@ MapArray* append(MapArray* arr, void* value, char type) {
 void appendInt(MapArray** arr_ref, int value) {
     int* val_cpy = malloc(sizeof(int));
     *val_cpy = value;
+    MapArray* result = append(*arr_ref, val_cpy, INT);
 
-    append(*arr_ref, val_cpy, INT);
+    if (result == NULL) { return; }
+
+    *arr_ref = result;
 }
 
 void appendFloat(MapArray** arr_ref, float value) {
     float* val_cpy = malloc(sizeof(float));
     *val_cpy = value;
+    MapArray* result = append(*arr_ref, val_cpy, FLOAT);
 
-    append(*arr_ref, val_cpy, FLOAT);
+    if (result == NULL) { return; }
+
+    *arr_ref = result;
 }
 
 void appendString(MapArray** arr_ref, char* value) {
     char* val_cpy = strdup(value);
-    append(*arr_ref, val_cpy, STRING);
+    MapArray* result = append(*arr_ref, val_cpy, STRING);
+
+    if (result == NULL) { return; }
+
+    *arr_ref = result;
+}
+
+void appendMap(MapArray** arr_ref, Map* value) {
+    MapArray* result = append(*arr_ref, value, MAP);
+
+    if (result == NULL) { return; }
+
+    *arr_ref = result;
+}
+
+void appendMapArray(MapArray **arr_ref, MapArray* value) {
+    MapArray* result = append(*arr_ref, value, ARRAY);
+
+    if (result == NULL) { return; }
+
+    *arr_ref = result;
 }
 
 void printMapArray(MapArray* array) {
+    printf("------------------------\n");
     for (int i = 0; i < array->size; i++) {
         switch (array->array[i].type) {
             case INT: {
@@ -299,9 +326,19 @@ void printMapArray(MapArray* array) {
                 printf("  [ %s\n", (char*)array->array[i].value);
                 break;
             }
+            case MAP: {
+                printMap((Map*)array->array[i].value);
+                break;
+            }
+            case ARRAY: {
+                printMapArray((MapArray*)array->array[i].value);
+                break;
+            }
             default: {
-                printf("Not handling this case yet\n");
+                printf("ERROR: unknown type %c\n", array->array[i].type);
+                exit(1);
             }
         }
     }
+    printf("------------------------\n");
 }
