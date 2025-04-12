@@ -13,8 +13,9 @@ int main(int argc, char* argv[]) {
     }
 
     const char* path = argv[1];
-    
-    Map* json_data = load_file(path); 
-    
+
+    Map* json_data = load_file(path);
+    destroyMap(json_data);
+
     return 0;
 }

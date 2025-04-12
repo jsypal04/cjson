@@ -157,7 +157,6 @@ Map* mapdup(Map* source);
 // Function to allocate the necessary heap memory for an array with a given initial capacity
 MapArray* initMapArray(int arr_cap);
 void destroyMapArray(MapArray* array);
-void printMapArray(MapArray* array);
 
 // Functions to insert values into an array
 void appendInt(     MapArray** arr_ref, int       value);
@@ -172,6 +171,8 @@ void insertInt(   Map** map_ref, char* key, int   value);
 void insertFloat( Map** map_ref, char* key, float value);
 void insertString(Map** map_ref, char* key, char* value);
 void insertMap(   Map** map_ref, char* key, Map*  value);
+void insertMapArray(Map** map_ref, char* key, MapArray* value);
+
 // void insertArray( Map** map_ref, char* key, )
 
 /* Function to retrieve the value mapped to a given key
@@ -181,7 +182,15 @@ void insertMap(   Map** map_ref, char* key, Map*  value);
  * */
 void* get(Map* map, char* key, char* type);
 
+/* Retrieves the value at a given index of the MapArray.
+ *
+ * The `type` parameter is the address where the type of the retrived value will be stored.
+ * You must use it to casr the void* to the correct typr after the value has been retrieved
+*/
+void* read(MapArray* array, int index, char* type);
+
 void printMap(Map* map);
+void printMapArray(MapArray* array);
 
 
 /*
@@ -192,5 +201,7 @@ Map* load_file(const char* path);
 Map* traverse_obj(ObjectAST* obj);
 void traverse_npair(NextPairAST* npair, Map* json_data);
 char traverse_val(ValueAST* val);
+MapArray* traverse_arr(ArrayAST* arr);
+void traverse_nval(NextValueAST* nval, MapArray* json_arr);
 
 #endif

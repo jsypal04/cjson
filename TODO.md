@@ -7,10 +7,10 @@
     4. Map destruction
     5. Creating the map in one scope and returning it to another scope (make sure all data is preserved)
 
-2. Implement ability to load a json array into the map data structure.
-3. I also probably want to implment some more/actual unit tests for the lexer and parser.
-4. Implement capacity expansion for appending arrays
-5. Store booleans as booleans not as strings
+2. I also probably want to implment some more/actual unit tests for the lexer and parser.
+3. Implement capacity expansion for appending arrays
+4. Store booleans as booleans not as strings
+5. Store nulls as NULL
 
 
 ## Issues:

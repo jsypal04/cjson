@@ -33,19 +33,30 @@ Map* initMap(int initMapCap) {
 void destroyMap(Map* map) {
     // need to iterate through each element of map->pairs and free memory allocated in each
     for (int i = 0; i < map->size; i++) {
+        // printf("Destroying map pair %d\n", i);
         if (map->pairs[i].key != NULL) {
             free(map->pairs[i].key);
             map->pairs[i].key = NULL;
         }
+        // printf("Destroyed key %d\n", i);
         if (map->pairs[i].value != NULL) {
-            if (map->pairs[i].type != MAP) {
+            if (map->pairs[i].type != MAP && map->pairs[i].type != ARRAY) {
                 free(map->pairs[i].value);
+                // printf("Destroyed value that is not MAP or ARRAY...\n");
                 map->pairs[i].value = NULL;
             }
-            else {
+            else if (map->pairs[i].type == ARRAY) {
+                destroyMapArray((MapArray*)map->pairs[i].value);
+            }
+            else if (map->pairs[i].type == MAP) {
                 destroyMap((Map*)map->pairs[i].value);
             }
+            else {
+                printf("ERROR: unknown type %c found while destroying map.\n", map->pairs[i].type);
+                exit(1);
+            }
         }
+        // printf("Destroyed value %d\n", i);
     }
 
     free(map->pairs);
@@ -162,7 +173,7 @@ void insertFloat(Map** map_ref, char* key, float value) {
 
 void insertString(Map** map_ref, char* key, char* value) {
     char* val = strdup(value); // MIGHT ACTUALLY NEED THIS LINE. I'M NOT SURE.
-    Map* result = insert(*map_ref, key, value, STRING);
+    Map* result = insert(*map_ref, key, val, STRING);
 
     if (result == NULL) { return; }
 
@@ -172,6 +183,14 @@ void insertString(Map** map_ref, char* key, char* value) {
 
 void insertMap(Map** map_ref, char* key, Map* value) {
     Map* result = insert(*map_ref, key, value, MAP);
+
+    if (result == NULL) { return; }
+
+    *map_ref = result;
+}
+
+void insertMapArray(Map** map_ref, char* key, MapArray* value) {
+    Map* result = insert(*map_ref, key, value, ARRAY);
 
     if (result == NULL) { return; }
 
@@ -195,7 +214,7 @@ void* get(Map* map, char* key, char* type) {
 
 void printMap(Map* map) {
     printf("------------------------\n");
-    for (int i = 0; i < map->mapCap; i++) {
+    for (int i = 0; i < map->size; i++) {
         char type = map->pairs[i].type;
 
         switch (type) {
@@ -214,8 +233,17 @@ void printMap(Map* map) {
             case MAP: {
                 printf("%s:\n", map->pairs[i].key);
                 printMap((Map*)map->pairs[i].value);
+                break;
             }
-
+            case ARRAY: {
+                printf("%s:\n", map->pairs[i].key);
+                printMapArray((MapArray*)map->pairs[i].value);
+                break;
+            }
+            default: {
+                printf("ERROR: unknown type %d found in `printMap`\n", type);
+                exit(1);
+            }
         }
     }
     printf("------------------------\n");
@@ -234,9 +262,17 @@ MapArray* initMapArray(int arr_cap) {
 
 void destroyMapArray(MapArray *array) {
     for (int i = 0; i < array->size; i++){
-        if (array->array[i].value != NULL) {
-            free(array->array[i].value);
-            array->array[i].value = NULL;
+        if (array->array[i].type != MAP && array->array[i].type != ARRAY) {
+            if (array->array[i].value != NULL) {
+                free(array->array[i].value);
+                array->array[i].value = NULL;
+            }
+        }
+        else if (array->array[i].type == ARRAY) {
+            destroyMapArray((MapArray*)array->array[i].value);
+        }
+        else if (array->array[i].type == MAP) {
+            destroyMap((Map*)array->array[i].value);
         }
     }
 
@@ -251,7 +287,7 @@ MapArray* append(MapArray* arr, void* value, char type) {
     assert(arr->size <= arr->cap);
 
     if (arr->size == arr->cap) {
-        // Expand array
+        // TODO: Expand array
         return NULL;
     }
 
@@ -302,12 +338,23 @@ void appendMap(MapArray** arr_ref, Map* value) {
     *arr_ref = result;
 }
 
-void appendMapArray(MapArray **arr_ref, MapArray* value) {
+void appendMapArray(MapArray** arr_ref, MapArray* value) {
     MapArray* result = append(*arr_ref, value, ARRAY);
 
     if (result == NULL) { return; }
 
     *arr_ref = result;
+}
+
+void* read(MapArray* array, int index, char* type) {
+    if (index >= array->size) {
+        return NULL;
+    }
+
+    void* value = array->array[index].value;
+    *type = array->array[index].type;
+
+    return value;
 }
 
 void printMapArray(MapArray* array) {
@@ -335,7 +382,7 @@ void printMapArray(MapArray* array) {
                 break;
             }
             default: {
-                printf("ERROR: unknown type %c\n", array->array[i].type);
+                printf("ERROR: unknown type %d found in `printMapArray`\n", array->array[i].type);
                 exit(1);
             }
         }

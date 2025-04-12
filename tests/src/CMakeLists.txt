@@ -2,6 +2,7 @@ cmake_minimum_required(VERSION 3.28)
 
 project(tests)
 set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_SOURCE_DIR}/../bin")
+set(CMAKE_BUILD_TYPE Debug)
 
 add_executable(lexTest1 lexTest1.c)
 target_link_libraries(lexTest1 ${CMAKE_SOURCE_DIR}/../../build/libcjson.a)
