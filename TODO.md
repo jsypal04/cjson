@@ -20,6 +20,8 @@ ISSUE: I'm pretty sure I have memory leaks whenever I insert into a map since I 
       upper lever insert functions are ever freed.
       EDIT: I think I fixed this but I'm going to keep this just to remind myself to test for it later.
 
+ISSUE: Fix the map capcity expansion in insert, I don't think it actually expands the capacity.
+
 
 ## Notes:
 

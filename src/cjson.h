@@ -153,6 +153,7 @@ void destroyMap(Map* map);
  * - NOTE: If a nested map is encountered, need to use recursion.
  * */
 Map* mapdup(Map* source);
+MapArray* arrdup(MapArray* array);
 
 // Function to allocate the necessary heap memory for an array with a given initial capacity
 MapArray* initMapArray(int arr_cap);

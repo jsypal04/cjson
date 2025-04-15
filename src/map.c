@@ -1,10 +1,3 @@
-/*
- * NOTE to self: It is very possible that when the map capacity needs to be expanded, the map variable passed
- * by the caller of `insert` might lose access to the map when I destroy it. I do re-assign it to `biggerMap`
- * but there might be some weird stuff going on with stack and heap memory that i'm not aware of.
- * */
-
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -77,7 +70,6 @@ Map* mapdup(Map* source) {
     for (int i = 0; i < source->size; i++) {
         KeyValuePair pair;
         pair.key = strdup(source->pairs[i].key);
-        pair.type = source->pairs[i].type;
 
         switch (source->pairs[i].type) {
             case STRING: {
@@ -100,6 +92,14 @@ Map* mapdup(Map* source) {
                 pair.value = mapdup((Map*)source->pairs[i].value);
                 break;
             }
+            case ARRAY: {
+                pair.value = arrdup((MapArray*)source->pairs[i].value);
+                break;
+            }
+            default: {
+                printf("ERROR: unkown type %d found in mapdup.\n", source->pairs[i].type);
+                exit(1);
+            }
         }
         copy->pairs[i] = pair;
         copy->size++;
@@ -112,8 +112,45 @@ Map* insert(Map* map, char* key, void* value, char type) {
 
     if (map->size == map->mapCap) {
         // expand the map:
+        Map* bigger_map = initMap(map->mapCap * 2);
 
-        Map* bigger_map = mapdup(map);
+        // copy values from old map
+        for (int i = 0; i < map->size; i++) {
+            KeyValuePair pair;
+            pair.key = strdup(map->pairs[i].key);
+            switch (map->pairs[i].type) {
+                case INT: {
+                    int* value = malloc(sizeof(int));
+                    *value = *(int*)map->pairs[i].value;
+                    pair.value = value;
+                    break;
+                }
+                case FLOAT: {
+                    float* value = malloc(sizeof(float));
+                    *value = *(float*)map->pairs[i].value;
+                    pair.value = value;
+                    break;
+                }
+                case STRING: {
+                    pair.value = strdup((char*)map->pairs[i].value);
+                    break;
+                }
+                case MAP: {
+                    pair.value = mapdup((Map*)map->pairs[i].value);
+                    break;
+                }
+                case ARRAY: {
+                    pair.value = arrdup((MapArray*)map->pairs[i].value);
+                    break;
+                }
+                default: {
+                    printf("ERROR: unkown type %d found expanding map in insert.\n", map->pairs[i].type);
+                    exit(1);
+                }
+            }
+            bigger_map->pairs[i] = pair;
+            bigger_map->size++;
+        }
 
         // 3. destroy old map
         destroyMap(map);
@@ -283,12 +320,95 @@ void destroyMapArray(MapArray *array) {
     array = NULL;
 }
 
+MapArray* arrdup(MapArray* array) {
+    assert(array->size <= array->cap);
+
+    MapArray* copy = initMapArray(array->cap);
+
+    for (int i = 0; i < array->size; i++) {
+        switch (array->array[i].type) {
+            case INT: {
+                appendInt(&copy, *(int*)array->array[i].value);
+                break;
+            }
+            case FLOAT: {
+                appendFloat(&copy, *(float*)array->array[i].value);
+                break;
+            }
+            case STRING: {
+                appendString(&copy, (char*)array->array[i].value);
+                break;
+            }
+            case MAP: {
+                Map* value = mapdup((Map*)array->array[i].value);
+                appendMap(&copy, value);
+                break;
+            }
+            case ARRAY: {
+                MapArray* value = arrdup((MapArray*)array->array[i].value);
+                appendMapArray(&copy, value);
+                break;
+            }
+            default: {
+                printf("ERROR: unkown type %d found in arrdup().\n", array->array[i].type);
+                exit(1);
+            }
+        }
+    }
+    return copy;
+}
+
 MapArray* append(MapArray* arr, void* value, char type) {
     assert(arr->size <= arr->cap);
 
     if (arr->size == arr->cap) {
         // TODO: Expand array
-        return NULL;
+        MapArray* bigger_arr = initMapArray(arr->cap * 2);
+
+        // copy values
+        for (int i = 0; i < arr->size; i++) {
+            Element element;
+            switch (arr->array[i].type) {
+                case INT: {
+                    appendInt(&arr, *(int*)arr->array[i].value);
+                    break;
+                }
+                case FLOAT: {
+                    appendFloat(&arr, *(float*)arr->array[i].value);
+                    break;
+                }
+                case STRING: {
+                    appendString(&arr, (char*)arr->array[i].value);
+                    break;
+                }
+                case MAP: {
+                    Map* value = mapdup((Map*)arr->array[i].value);
+                    appendMap(&arr, value);
+                    break;
+                }
+                case ARRAY: {
+                    MapArray* value = arrdup((MapArray*)arr->array[i].value);
+                    appendMapArray(&arr, value);
+                    break;
+                }
+                default: {
+                    printf("ERROR: unkown type %d found expanding capacity of an array.\n", arr->array[i].type);
+                    exit(1);
+                }
+            }
+            bigger_arr->array[i] = element;
+            bigger_arr->size++;
+        }
+
+        // insert new element
+        Element element;
+        element.value = value;
+        element.type = type;
+
+        arr->array[arr->size] = element;
+        arr->size++;
+
+        return bigger_arr;
     }
 
     Element element;
