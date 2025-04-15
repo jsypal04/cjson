@@ -239,7 +239,6 @@ void* get(Map* map, char* key, char* type) {
 
     for (int i = 0; i < map->size; i++) {
         if (strcmp(map->pairs[i].key, key) == 0) {
-            printf("Found key %s in map\n", key);
             *type = map->pairs[i].type;
             return map->pairs[i].value;
         }

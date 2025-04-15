@@ -1,6 +1,5 @@
 #include <assert.h>
 #include <ctype.h>
-#include <stdbool.h>
 #include <stdlib.h>
 #include <string.h>
 #include "cjson.h"
@@ -34,7 +33,7 @@ bool is_float(char* value) {
         else if (value[i] == '.' && decimal_found) {
             return false;
         }
-        else {
+        else if (value[i] == '.' && !decimal_found) {
             decimal_found = true;
         }
     }
@@ -263,8 +262,6 @@ void traverse_nval(NextValueAST* nval, MapArray* json_arr) {
 Map* load_file(const char* path) {
     ObjectAST* ast = parse(path);
     Map* json_data = traverse_obj(ast);
-
-    printMap(json_data);
 
     destroyAST(ast);
 

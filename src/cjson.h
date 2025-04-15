@@ -3,6 +3,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
 
 #define MAX_LEX_LEN 10000
 
@@ -204,5 +205,7 @@ void traverse_npair(NextPairAST* npair, Map* json_data);
 char traverse_val(ValueAST* val);
 MapArray* traverse_arr(ArrayAST* arr);
 void traverse_nval(NextValueAST* nval, MapArray* json_arr);
+
+bool is_float(char* value);
 
 #endif
