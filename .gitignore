@@ -1,6 +1,3 @@
-notes.txt
-
 /build/
-/tests/lexTests/build/
-/tests/parserTests/build/
-/tests/mapTests/build/
+/tests/build/
+.gitignore

@@ -52,8 +52,6 @@ void lex(SourceLexState* state) {
 
         // retrieve characters till another quote is reached
         int index = 0;
-        lexemeBuf[index] = state->nextChar;
-        index++;
 
         state->nextChar = getc(state->source);
         lexemeBuf[index] = state->nextChar;
@@ -62,6 +60,9 @@ void lex(SourceLexState* state) {
         while (state->nextChar != '"') {
             state->nextChar = getc(state->source);
             if (index < MAX_LEX_LEN) {
+                if (state->nextChar == '"') {
+                    continue;
+                }
                 lexemeBuf[index] = state->nextChar;
                 index++;
             }
