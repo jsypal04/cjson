@@ -8,9 +8,12 @@
     5. Creating the map in one scope and returning it to another scope (make sure all data is preserved)
 
 2. I also probably want to implment some more/actual unit tests for the lexer and parser.
-3. Implement capacity expansion for appending arrays
-4. Store booleans as booleans not as strings
-5. Store nulls as NULL
+3. Store booleans as booleans not as strings
+4. Store nulls as NULL
+
+**Other stuff I want to do**
+
+1. Enable reading a JSON file from a socket stream.
 
 
 ## Issues:
@@ -19,8 +22,6 @@ ISSUE: I'm pretty sure I have memory leaks whenever I insert into a map since I 
       and insertMap functions and re-copy (using malloc) again in the insert function. The I don't think the pointers allocated in the
       upper lever insert functions are ever freed.
       EDIT: I think I fixed this but I'm going to keep this just to remind myself to test for it later.
-
-ISSUE: Fix the map capcity expansion in insert, I don't think it actually expands the capacity.
 
 
 ## Notes:
@@ -32,3 +33,4 @@ then return the map. If I use the stack there is less memory management to worry
 return it from whatever function you are in. Maybe that is not a big deal but we also have to consider that the KeyValuePair array
 is allocated from the heap (and it must be since it's size is determined at runtime) and I think there will be a memory leak
 if the map gets dropped without destroying the array (which seems very likely to happen).
+EDIT: I thinl the same applies to the `initMapArray` function
