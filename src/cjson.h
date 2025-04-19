@@ -1,11 +1,13 @@
 #ifndef CJSON_H
 #define CJSON_H
 
+#include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
 
 #define MAX_LEX_LEN 10000
+#define MAX_FILE_SIZE_B 1048576 // Maximum allowed json file measured in bytes (equivalent to 1MB)
 
 // Token defintions
 typedef enum Token {
@@ -25,7 +27,8 @@ typedef enum Token {
 
 // lexer state type defintion
 typedef struct SourceLexState {
-    FILE* source;
+    char* source;
+    uint32_t src_idx;
     char  nextChar;
     Token token;
     char* lexeme;
@@ -34,9 +37,9 @@ typedef struct SourceLexState {
 /*
 Lexer Functions
 */
-SourceLexState initLexer(const char* sourcePath);
+SourceLexState initLexer(char* source);
 void lex(SourceLexState* statePtr);
-
+char get_char(SourceLexState* state);
 
 
 /************************
@@ -89,7 +92,7 @@ one for each node plus a bonus one at the beginning. All functions should return
 state containing the next lexeme to be processed.
 */
 
-ObjectAST*    parse(const char* sourcePath);
+ObjectAST*    parse(char* path);
 ObjectAST*    parseObject(SourceLexState* state);
 ArrayAST*     parseArray(SourceLexState* state);
 NextPairAST*  parseNextPair(SourceLexState* state);
@@ -189,7 +192,7 @@ void* get(Map* map, char* key, char* type);
  * The `type` parameter is the address where the type of the retrived value will be stored.
  * You must use it to casr the void* to the correct typr after the value has been retrieved
 */
-void* read(MapArray* array, int index, char* type);
+void* read_arr(MapArray* array, int index, char* type);
 
 void printMap(Map* map);
 void printMapArray(MapArray* array);

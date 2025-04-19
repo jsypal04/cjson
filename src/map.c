@@ -465,7 +465,7 @@ void appendMapArray(MapArray** arr_ref, MapArray* value) {
     *arr_ref = result;
 }
 
-void* read(MapArray* array, int index, char* type) {
+void* read_arr(MapArray* array, int index, char* type) {
     if (index >= array->size) {
         return NULL;
     }

@@ -7,7 +7,7 @@ set(CMAKE_BUILD_TYPE Debug)
 add_executable(lexTest1 lexTest1.c)
 target_link_libraries(lexTest1 ${CMAKE_SOURCE_DIR}/../../build/libcjson.a)
 
-add_executable(parserTest1 lexTest1.c)
+add_executable(parserTest1 parserTest1.c)
 target_link_libraries(parserTest1 ${CMAKE_SOURCE_DIR}/../../build/libcjson.a)
 
 add_executable(mapTest1 mapTest1.c)

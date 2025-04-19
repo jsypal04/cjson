@@ -1,7 +1,13 @@
 #include <assert.h>
 #include <ctype.h>
+#include <iso646.h>
+#include <netdb.h>
+#include <netinet/in.h>
+#include <stddef.h>
 #include <stdlib.h>
 #include <string.h>
+#include <sys/socket.h>
+#include <unistd.h>
 #include "cjson.h"
 
 
@@ -260,7 +266,19 @@ void traverse_nval(NextValueAST* nval, MapArray* json_arr) {
 
 
 Map* load_file(const char* path) {
-    ObjectAST* ast = parse(path);
+    FILE* src_stream = fopen(path, "r");
+    char source[MAX_FILE_SIZE_B] = "\0";
+    uint32_t src_idx = 0;
+    char c = getc(src_stream);
+    while (c != EOF) {
+        source[src_idx] = c;
+        src_idx++;
+        c = getc(src_stream);
+    }
+    source[src_idx] = '\0';
+    fclose(src_stream);
+
+    ObjectAST* ast = parse(source);
     Map* json_data = traverse_obj(ast);
 
     destroyAST(ast);

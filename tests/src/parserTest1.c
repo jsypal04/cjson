@@ -8,12 +8,12 @@
 #define NUM_KEYS 10
 #define NUM_VALUES 12
 
-char* correctKeys[] = {"\"main\"", "\"id\"", "\"inStock\"", "\"id\"", "\"inStock\"", "\"mainVendor\"", "\"CEO\"", 
-                       "\"firstName\"", "\"lastName\"", "\"age\""};
+char* correctKeys[] = {"main", "id", "inStock", "id", "inStock", "mainVendor", "CEO",
+                       "firstName", "lastName", "age"};
 char parsedKeys[NUM_KEYS][MAX_LEX_LEN];
 unsigned int numKeysParsed = 0;
 
-char* correctValues[] = {"array", "object", "0", "true", "object", "1.34", "false", "null", "object", "\"John\"", "\"Doe\"", "-34.28"};
+char* correctValues[] = {"array", "object", "0", "true", "object", "1.34", "false", "null", "object", "John", "Doe", "-34.28"};
 char parsedValues[NUM_VALUES][MAX_LEX_LEN];
 unsigned int numValuesParsed = 0;
 
@@ -26,7 +26,7 @@ void checkNextValue(NextValueAST* nextValue);
 
 void checkObject(ObjectAST* obj) {
     if (numKeysParsed >= NUM_KEYS) {
-        printf("ERROR: parsed test 1 (basic syntax test) failed. Too many keys were found.\n"); 
+        printf("ERROR: parsed test 1 (basic syntax test) failed. Too many keys were found.\n");
         exit(1);
     }
     strcpy(parsedKeys[numKeysParsed], obj->key);
@@ -36,7 +36,7 @@ void checkObject(ObjectAST* obj) {
         printf("ERROR: parser test 1 (basic syntax test) failed. The value field of the ObjectAST struct is NULL.\n");
         exit(1);
     }
-    
+
     checkValue(obj->value);
     if (obj->nextPair != NULL) {
         checkNextPair(obj->nextPair);
@@ -52,13 +52,13 @@ void checkArray(ArrayAST* array) {
 
 void checkNextPair(NextPairAST* nextPair) {
     if (numKeysParsed >= NUM_KEYS) {
-        printf("ERROR: parsed test 1 (basic syntax test) failed. Too many keys were found.\n"); 
+        printf("ERROR: parsed test 1 (basic syntax test) failed. Too many keys were found.\n");
         exit(1);
     }
 
     strcpy(parsedKeys[numKeysParsed], nextPair->key);
     numKeysParsed++;
-    
+
     checkValue(nextPair->value);
     if (nextPair->nextPair != NULL) {
         checkNextPair(nextPair->nextPair);
@@ -111,7 +111,20 @@ int main(int argc, char* argv[]) {
         exit(1);
     }
     const char* jsonSrcPath = argv[1];
-    ObjectAST* ast = parse(jsonSrcPath);
+
+    FILE* src_stream = fopen(jsonSrcPath, "r");
+    char source[MAX_FILE_SIZE_B] = "\0";
+    uint32_t src_idx = 0;
+    char c = getc(src_stream);
+    while (c != EOF) {
+        source[src_idx] = c;
+        src_idx++;
+        c = getc(src_stream);
+    }
+    source[src_idx] = '\0';
+    fclose(src_stream);
+
+    ObjectAST* ast = parse(source);
 
     printf("\n------------------------------------\n");
 
@@ -122,7 +135,7 @@ int main(int argc, char* argv[]) {
         if (strcmp(parsedKeys[i], correctKeys[i])) {
             passed = false;
             printf(
-                "ERROR: parser test 1 (basic syntax test) failed. Parsed key %s and correct key %s do not match.\n", 
+                "ERROR: parser test 1 (basic syntax test) failed. Parsed key %s and correct key %s do not match.\n",
                 parsedKeys[i], correctKeys[i]
             );
         }
@@ -131,7 +144,7 @@ int main(int argc, char* argv[]) {
         if (strcmp(parsedValues[i], correctValues[i])) {
             passed = false;
             printf(
-                "ERROR: parser test 1 (basic syntax test) failed. Parsed key %s and correct key %s do not match.\n", 
+                "ERROR: parser test 1 (basic syntax test) failed. Parsed key %s and correct key %s do not match.\n",
                 parsedValues[i], correctValues[i]
             );
         }
