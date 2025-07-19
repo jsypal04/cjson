@@ -1,11 +1,11 @@
 # CJSON
 
-cjson is a json parser written in C for marshalling and unmarshalling json data into a custom unordered map.
+cjson is a json parser written in C for serializing and deserializing json data into a custom ordered map.
 
 
 ## Use
 
-Much to your dismay this project is currently unusable. The idea is it will provide an api with functions that convert json text input to a C unordered map.
+Much to your dismay this project is currently unusable. The idea is it will provide an api with functions that convert json text input to a C ordered map.
 Right now I am planning on simply having one header file and one static library to add to a project.
 
 ## Roadmap
