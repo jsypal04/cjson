@@ -9,7 +9,7 @@ the parser is on. For debugging purposes. */
 int astDepth = 0;
 char keyboardInput;
 
-ObjectAST* parse(char* source) {
+ObjectAST* parse(const char* source) {
     // printf("Begin parsing %s.\n", sourcePath);
     // scanf("%c", &keyboardInput);
 

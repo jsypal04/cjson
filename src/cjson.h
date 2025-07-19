@@ -27,7 +27,7 @@ typedef enum Token {
 
 // lexer state type defintion
 typedef struct SourceLexState {
-    char* source;
+    const char* source;
     uint32_t src_idx;
     char  nextChar;
     Token token;
@@ -37,7 +37,7 @@ typedef struct SourceLexState {
 /*
 Lexer Functions
 */
-SourceLexState initLexer(char* source);
+SourceLexState initLexer(const char* source);
 void lex(SourceLexState* statePtr);
 char get_char(SourceLexState* state);
 
@@ -92,7 +92,7 @@ one for each node plus a bonus one at the beginning. All functions should return
 state containing the next lexeme to be processed.
 */
 
-ObjectAST*    parse(char* path);
+ObjectAST*    parse(const char* source);
 ObjectAST*    parseObject(SourceLexState* state);
 ArrayAST*     parseArray(SourceLexState* state);
 NextPairAST*  parseNextPair(SourceLexState* state);
@@ -172,10 +172,10 @@ void appendMapArray(MapArray** arr_ref, MapArray* value);
 
 
 // Functions to insert a value with a given key and type into the map
-void insertInt(   Map** map_ref, char* key, int   value);
-void insertFloat( Map** map_ref, char* key, float value);
-void insertString(Map** map_ref, char* key, char* value);
-void insertMap(   Map** map_ref, char* key, Map*  value);
+void insertInt(     Map** map_ref, char* key, int       value);
+void insertFloat(   Map** map_ref, char* key, float     value);
+void insertString(  Map** map_ref, char* key, char*     value);
+void insertMap(     Map** map_ref, char* key, Map*      value);
 void insertMapArray(Map** map_ref, char* key, MapArray* value);
 
 // void insertArray( Map** map_ref, char* key, )
@@ -210,5 +210,9 @@ MapArray* traverse_arr(ArrayAST* arr);
 void traverse_nval(NextValueAST* nval, MapArray* json_arr);
 
 bool is_float(char* value);
+
+/* A function to serialize a C map into a json string
+ * */
+char* dump(Map* map);
 
 #endif

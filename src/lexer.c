@@ -4,7 +4,7 @@
 #include <ctype.h>
 #include <string.h>
 
-SourceLexState initLexer(char* source) {
+SourceLexState initLexer(const char* source) {
     SourceLexState initialState;
     initialState.source = source;
     initialState.src_idx = 0;

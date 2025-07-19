@@ -8,4 +8,5 @@ add_library(cjson
     parser.c
     map.c
     load.c
+    dump.c
 )

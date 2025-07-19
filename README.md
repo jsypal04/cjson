@@ -8,6 +8,14 @@ cjson is a json parser written in C for marshalling and unmarshalling json data 
 Much to your dismay this project is currently unusable. The idea is it will provide an api with functions that convert json text input to a C unordered map.
 Right now I am planning on simply having one header file and one static library to add to a project.
 
+## Roadmap
+
+This is basically a list of things that I want to add.
+
+- Convert C objects to json text
+- Build out unit tests
+- Do stress testing
+
 ## Supported Platforms
 
 I am building this on linux but, out of the goodness of my heart, am considering also making is compatable with Windows.
