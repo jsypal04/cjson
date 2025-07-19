@@ -1,5 +1,6 @@
 // this test ensures parser functionality on all basic syntax
 #include "../../src/cjson.h"
+#include "../../src/deserialization.h"
 #include <stdlib.h>
 #include <stdio.h>
 #include <string.h>

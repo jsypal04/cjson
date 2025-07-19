@@ -2,6 +2,7 @@
 // this test uses the lexTest1.json source file
 #include <stdlib.h>
 #include "../../src/cjson.h"
+#include "../../src/deserialization.h"
 
 #define TOKEN_LEN 45
 

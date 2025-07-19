@@ -9,6 +9,7 @@
 #include <sys/socket.h>
 #include <unistd.h>
 #include "cjson.h"
+#include "deserialization.h"
 
 
 bool is_int(char* value) {

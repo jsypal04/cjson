@@ -6,117 +6,17 @@
 #include <stdlib.h>
 #include <stdbool.h>
 
-#define MAX_LEX_LEN 10000
 #define MAX_FILE_SIZE_B 1048576 // Maximum allowed json file measured in bytes (equivalent to 1MB)
-
-// Token defintions
-typedef enum Token {
-    END,
-    NONE,
-    STR,
-    NUM,
-    BOOL,
-
-    LBRACE,
-    RBRACE,
-    LBRACKET,
-    RBRACKET,
-    COLON,
-    COMMA
-} Token;
-
-// lexer state type defintion
-typedef struct SourceLexState {
-    const char* source;
-    uint32_t src_idx;
-    char  nextChar;
-    Token token;
-    char* lexeme;
-} SourceLexState;
-
-/*
-Lexer Functions
-*/
-SourceLexState initLexer(const char* source);
-void lex(SourceLexState* statePtr);
-char get_char(SourceLexState* state);
-
-
-/************************
-AST TYPES
-
-The types for each node of the AST for the parser are defined below
-************************/
-
-// forward AST type definitions
-typedef struct ObjectAST    ObjectAST;
-typedef struct NextPairAST  NextPairAST;
-typedef struct ValueAST     ValueAST;
-typedef struct NextValueAST NextValueAST;
-typedef struct ArrayAST     ArrayAST;
-
-// only one field should be populated, all else null
-struct ValueAST {
-    char*      lexeme;
-    ArrayAST*  array;
-    ObjectAST* obj;
-};
-
-struct NextValueAST {
-    ValueAST*     value;
-    NextValueAST* nextValue;
-};
-
-struct NextPairAST {
-    char*        key;
-    ValueAST*    value;
-    NextPairAST* nextPair;
-};
-
-struct ArrayAST {
-    ValueAST*     value;
-    NextValueAST* nextValue;
-};
-
-struct ObjectAST {
-    char*        key;
-    ValueAST*    value;
-    NextPairAST* nextPair;
-};
-
-/*
-AST/Parser FUNCTIONS (naturally we use a recursive descent parser like a boss)
-
-The functions for the recursive descent descent parser are defined here. There is
-one for each node plus a bonus one at the beginning. All functions should return with
-state containing the next lexeme to be processed.
-*/
-
-ObjectAST*    parse(const char* source);
-ObjectAST*    parseObject(SourceLexState* state);
-ArrayAST*     parseArray(SourceLexState* state);
-NextPairAST*  parseNextPair(SourceLexState* state);
-ValueAST*     parseValue(SourceLexState* state);
-NextValueAST* parseNextValue(SourceLexState* state);
-
-// destructor for the AST
-void destroyAST(ObjectAST* root);
-void destroyObject(ObjectAST* obj);
-void destroyArray(ArrayAST* array);
-void destroyNextPair(NextPairAST* nextPair);
-void destroyValue(ValueAST* value);
-void destroyNextValue(NextValueAST* nextValue);
-
 
 /*
  * Data Structure to store the JSON data (An ordered map)
  */
-#define STRING 's'
-#define INT    'i'
-#define FLOAT  'f'
-#define BOOL   'b'
-#define ARRAY  'a'
-#define MAP    'm'
+#define STRING    's'
+#define INT       'i'
+#define FLOAT     'f'
+#define BOOLEAN   'b'
+#define ARRAY     'a'
+#define MAP       'm'
 
 typedef struct {
     char* key;
@@ -178,7 +78,6 @@ void insertString(  Map** map_ref, char* key, char*     value);
 void insertMap(     Map** map_ref, char* key, Map*      value);
 void insertMapArray(Map** map_ref, char* key, MapArray* value);
 
-// void insertArray( Map** map_ref, char* key, )
 
 /* Function to retrieve the value mapped to a given key
  *
@@ -197,22 +96,27 @@ void* read_arr(MapArray* array, int index, char* type);
 void printMap(Map* map);
 void printMapArray(MapArray* array);
 
-
 /*
  * Functions to load json parsed by the parser into a Map
  * */
 Map* load_file(const char* path);
 
-Map* traverse_obj(ObjectAST* obj);
-void traverse_npair(NextPairAST* npair, Map* json_data);
-char traverse_val(ValueAST* val);
-MapArray* traverse_arr(ArrayAST* arr);
-void traverse_nval(NextValueAST* nval, MapArray* json_arr);
-
 bool is_float(char* value);
 
-/* A function to serialize a C map into a json string
+/* 
+ * Serialize a C Map into a json string
  * */
 char* dump(Map* map);
+
+/*
+ * Serialize a C Map into a .json file
+ *
+ * The `path` param sepecifies where the output directory of the file (must include the filename)
+ *
+ * A non zero return value indicates failure
+ * 
+ * NOTE: if a file already exists at the path, it will be overwritten!
+ * */
+int dumpf(Map* map, const char* output_path);
 
 #endif
