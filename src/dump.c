@@ -157,6 +157,7 @@ int dumpf(Map* map, const char* output_path) {
     char* json = dump(map);
     fputs(json, output_file);
     fclose(output_file);
+    free(json);
 
     return 0;
 }

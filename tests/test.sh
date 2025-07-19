@@ -39,13 +39,6 @@ then
         else
             $test
         fi
-
-        if [ $? -ne 0 ]; then
-            echo "FAILED: $test"
-        else 
-            echo "PASSED: $test"
-        fi
-
     done
     exit 0
 else
@@ -60,13 +53,6 @@ else
         else
             ./bin/$test
         fi
-
-        if [ $? -ne 0 ]; then
-            echo "FAILED: $test"
-        else 
-            echo "PASSED: $test"
-        fi
-
     else
         echo "ERROR: Unit test bin/$test does not exist (type ./test.sh -help for the help menu)"
         exit 1
