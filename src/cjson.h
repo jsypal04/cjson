@@ -89,9 +89,12 @@ void* get(Map* map, char* key, char* type);
 /* Retrieves the value at a given index of the MapArray.
  *
  * The `type` parameter is the address where the type of the retrived value will be stored.
- * You must use it to casr the void* to the correct typr after the value has been retrieved
+ * You must use it to cast the void* to the correct typr after the value has been retrieved
 */
 void* read_arr(MapArray* array, int index, char* type);
+
+bool map_cmp(Map* map1, Map* map2);
+bool arr_cmp(MapArray* arr1, MapArray* arr2);
 
 void printMap(Map* map);
 void printMapArray(MapArray* array);

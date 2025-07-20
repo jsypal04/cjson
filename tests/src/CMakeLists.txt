@@ -22,5 +22,14 @@ target_link_libraries(arrTest1 ${CMAKE_SOURCE_DIR}/../../build/libcjson.a)
 add_executable(loadTest1 loadTest1.c)
 target_link_libraries(loadTest1 ${CMAKE_SOURCE_DIR}/../../build/libcjson.a)
 
-add_executable(dumpTests dumpTests.c)
+add_executable(mapTests 
+    mapTests.c
+    utils/map_utils.c
+)
+target_link_libraries(mapTests ${CMAKE_SOURCE_DIR}/../../build/libcjson.a)
+
+add_executable(dumpTests 
+    dumpTests.c
+    utils/map_utils.c
+)
 target_link_libraries(dumpTests ${CMAKE_SOURCE_DIR}/../../build/libcjson.a)

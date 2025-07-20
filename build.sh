@@ -26,7 +26,9 @@ cmake --build tests/build
 
 if [ $input = "-test" ];
 then
-    cd tests
-    ./test.sh -$test_name
-    cd ..
+    if [ $# -eq 1 ]; then
+        cd tests && ./test.sh -all && cd ..
+    else
+        cd tests && ./test.sh -$test_name && cd ..
+    fi
 fi
