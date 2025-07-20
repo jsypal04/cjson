@@ -1,18 +1,16 @@
-#include "cjson.h"
+#include "deserialization.h"
 #include <complex.h>
 #include <stdio.h>
 #include <ctype.h>
 #include <string.h>
 
-SourceLexState initLexer(const char* sourcePath) {
+SourceLexState initLexer(const char* source) {
     SourceLexState initialState;
-    initialState.source = fopen(sourcePath, "r");
-    if (initialState.source == NULL) {
-        printf("ERROR: source file not found.\n");
-        exit(1);
-    }
+    initialState.source = source;
+    initialState.src_idx = 0;
 
-    initialState.nextChar = getc(initialState.source);
+    initialState.nextChar = initialState.source[initialState.src_idx];
+    initialState.src_idx++;
 
     if (initialState.nextChar != '{') {
         printf("ERROR: First character should be a left brace.\n");
@@ -25,9 +23,15 @@ SourceLexState initLexer(const char* sourcePath) {
     return initialState;
 }
 
+char get_char(SourceLexState* state) {
+    char c = state->source[state->src_idx];
+    state->src_idx++;
+    return c;
+}
+
 void lex(SourceLexState* state) {
     // fetch next character
-    state->nextChar = getc(state->source);
+    state->nextChar = get_char(state);
 
     // printf("Beginning lex()...\n");
     // printf("\nInitial Value of state->lexeme: %s\n", state->lexeme);
@@ -37,11 +41,11 @@ void lex(SourceLexState* state) {
     // if character is whitespace skip till non whitespace
     while (isspace(state->nextChar)) {
         // printf("%x\n", state->nextChar);
-        state->nextChar = getc(state->source);
+        state->nextChar = get_char(state);
     }
 
     // check for EOF
-    if (state->nextChar == EOF) {
+    if (state->nextChar == '\0') {
         state->lexeme = "\0";
         state->token = END;
         return;
@@ -53,12 +57,12 @@ void lex(SourceLexState* state) {
         // retrieve characters till another quote is reached
         int index = 0;
 
-        state->nextChar = getc(state->source);
+        state->nextChar = get_char(state);
         lexemeBuf[index] = state->nextChar;
         index++;
 
         while (state->nextChar != '"') {
-            state->nextChar = getc(state->source);
+            state->nextChar = get_char(state);
             if (index < MAX_LEX_LEN) {
                 if (state->nextChar == '"') {
                     continue;
@@ -88,7 +92,7 @@ void lex(SourceLexState* state) {
         lexemeBuf[index] = state->nextChar;
         index++;
 
-        state->nextChar = getc(state->source);
+        state->nextChar = get_char(state);
 
         while (isdigit(state->nextChar)) {
             if (index < MAX_LEX_LEN) {
@@ -99,7 +103,7 @@ void lex(SourceLexState* state) {
                 printf("ERROR: Maximum lexeme length (10000) exceeded.\n");
                 exit(1);
             }
-            state->nextChar = getc(state->source);
+            state->nextChar = get_char(state);
         }
         // check for period
         if (state->nextChar != '.') {
@@ -107,7 +111,8 @@ void lex(SourceLexState* state) {
             state->lexeme = lexemeBuf;
 
             // move the file pointer back one byte
-            fseek(state->source, -1, SEEK_CUR);
+            // fseek(state->source, -1, SEEK_CUR);
+            state->src_idx--;
             return;
         }
 
@@ -122,7 +127,7 @@ void lex(SourceLexState* state) {
         }
 
         // fetch the fractional part
-        state->nextChar = getc(state->source);
+        state->nextChar = get_char(state);
         if (!isdigit(state->nextChar)) {
             printf("ERROR: Invalid syntax (number must have fractional part)\n");
             exit(1);
@@ -137,11 +142,12 @@ void lex(SourceLexState* state) {
                 exit(1);
             }
 
-            state->nextChar = getc(state->source);
+            state->nextChar = get_char(state);
         }
 
         // move the file pointer back one byte
-        fseek(state->source, -1, SEEK_CUR);
+        // fseek(state->source, -1, SEEK_CUR);
+        state->src_idx--;
 
         state->token = NUM;
         state->lexeme = lexemeBuf;
@@ -161,7 +167,7 @@ void lex(SourceLexState* state) {
             exit(1);
         }
 
-        state->nextChar = getc(state->source);
+        state->nextChar = get_char(state);
         while (isalpha(state->nextChar)) {
             if (index < MAX_LEX_LEN) {
                 lexemeBuf[index] = state->nextChar;
@@ -172,7 +178,7 @@ void lex(SourceLexState* state) {
                 exit(1);
             }
 
-            state->nextChar = getc(state->source);
+            state->nextChar = get_char(state);
         }
 
         // check that the word is true or false
@@ -189,7 +195,8 @@ void lex(SourceLexState* state) {
             exit(1);
         }
         // move the file pointer back one byte
-        fseek(state->source, -1, SEEK_CUR);
+        // fseek(state->source, -1, SEEK_CUR);
+        state->src_idx--;
     }
     // if the character is a left brace return info for left braces
     else if (state->nextChar == '{') {

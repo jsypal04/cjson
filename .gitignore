@@ -1,4 +1,5 @@
 /build/
+/bin/
 /tests/build/
-.gitignore
-src/net/sockets
+/tests/bin/
+/jsonOutput/

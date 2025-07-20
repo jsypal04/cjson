@@ -1,5 +1,7 @@
 ## List of things to do:
 
+**Update (7/19/25):** I have not been updating this list. I am pretty sure 1.1-1.5 have already been implemented but should probably double-check.
+
 1. Implement actual unit tests for Map. Some cases I need to test:
 
     1. Capacity expansion
@@ -7,9 +9,10 @@
     4. Map destruction
     5. Creating the map in one scope and returning it to another scope (make sure all data is preserved)
 
-2. I also probably want to implment some more/actual unit tests for the lexer and parser.
+2. I also probably want to impelment some more/actual unit tests for the lexer and parser.
 3. Store booleans as booleans not as strings
 4. Store nulls as NULL
+5. Check for duplicate keys on insertion (not actually sure if this happens).
 
 **Other stuff I want to do**
 
