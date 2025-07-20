@@ -16,6 +16,7 @@ then
     echo "  ./build.sh -> the project will be build from the cmake cache's"
     echo "  ./build.sh -clean -> new cmake files will be generated then the project will build"
     echo "  ./build.sh -help -> displays this help menu"
+    echo "  ./build.sh -test -> builds the project and runs all unit tests"
     echo "  ./build.sh -test <test_executable> -> builds the project and runs the unit test specified"
     exit 0
 fi
