@@ -39,15 +39,9 @@ to run one or all of them. The tests directory also contains a bin directory for
 
 ## Building From Source
 
-You may be able to simply run `build.sh` but I honestly don't know if it still works.
-
 1. Clone the repo
 2. Make a `build` directory
-3. From the root directory run `cmake -S src -B path/to/build`
-4. From the root directory run `cmake --build path/to/build`
-5. Make a directory `tests/build`
-6. From the tests directory run `cmake -S src -B path/to/build`
-7. Run `cmake --build path/to/build`
+3. cd into the repo and run `./build.sh -clean`
 
 To use this, you need two files: `cjson.h` (in the src directory) and (on linux) `libcjson.a` (in the main build directory). Include the
 header file in your project and link the archive.
