@@ -48,7 +48,6 @@ to run one or all of them. The tests directory also contains a bin directory for
 ## Building From Source
 
 1. Clone the repo
-2. Make a `build` directory
 3. cd into the repo and run `./build.sh -clean`
 
 To use this, you need two files: `cjson.h` (in the src directory) and (on linux) `libcjson.a` (in the main build directory). Include the

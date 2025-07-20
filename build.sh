@@ -5,6 +5,14 @@ test_name=$2
 
 if [ $input = "-clean" ];
 then
+    if [ ! -d "./build" ]; then
+        mkdir "./build"
+    fi
+
+    if [ ! -d "./bin" ]; then
+        mkdir "./bin"
+    fi
+
     cmake -S src -B build
     cmake -S tests/src -B tests/build
 fi
