@@ -509,6 +509,33 @@ void printMapArray(MapArray* array) {
     printf("------------------------\n");
 }
 
+char** get_keys(Map* map) {
+    char* keys_arr[map->size];
+    int index = 0;
+
+    for (int i = 0; i < map->size; i++) {
+        keys_arr[i] = strdup(map->pairs[i].key);
+    }
+
+    char** keys = malloc(sizeof(keys_arr));
+    for (int i = 0; i < map->size; i++) {
+        keys[i] = strdup(keys_arr[i]);
+        free(keys_arr[i]);
+        keys_arr[i] = NULL;
+    }
+
+    return keys;
+}
+
+void destroy_keys_arr(char** keys, int length) {
+    for (int i = 0; i < length; i++) {
+        free(keys[i]);
+        keys[i] = NULL;
+    }
+    free(keys);
+    keys = NULL;
+}
+
 bool map_cmp(Map* map1, Map* map2) {
     if (map1->size != map2->size) return false;
 

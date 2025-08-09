@@ -13,6 +13,7 @@
 3. Store booleans as booleans not as strings
 4. Store nulls as NULL
 5. Check for duplicate keys on insertion (not actually sure if this happens).
+6. Change the map_cmp function to ignore key order.
 
 **Other stuff I want to do**
 

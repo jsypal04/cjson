@@ -1,9 +1,10 @@
 #include <assert.h>
 #include <stdio.h>
+#include <string.h>
 #include "../../src/cjson.h"
 #include "utils/test_utils.h"
 
-#define NUM_TESTS 4
+#define NUM_TESTS 5
 
 extern char* keys[KEYS_LEN];
 
@@ -29,14 +30,14 @@ int map_cmp_test_diff_maps() {
     if (map_cmp(map1, map2)) return 1;
 
     return 0;
-} 
+}
 
 int mapdup_test() {
     Map* map = initMap(10);
     insertInt(&map, keys[0], 0);
     insertFloat(&map, keys[1], 3.14);
     insertString(&map, keys[2], "hello, world");
-    
+
     Map* map2 = mapdup(map);
 
     if (!map_cmp(map, map2)) return 1;
@@ -58,18 +59,36 @@ int creation_and_insertion_test() {
     return 0;
 }
 
+int retrieve_keys_test() {
+    Map* map = make_map();
+    char* correct_keys[6] = { "hello", "world", "how", "are", "you", "doing" };
+
+    char** keys = get_keys(map);
+    for (int i = 0; i < map->size; i++) {
+        if (strcmp(keys[i], correct_keys[i]) != 0) {
+            destroy_keys_arr(keys, map->size);
+            return 1;
+        }
+    }
+
+    destroy_keys_arr(keys, map->size);
+    return 0;
+}
+
 int main() {
-    char* names[NUM_TESTS] = { 
-        "map_cmp_test_same_maps", 
-        "map_cmp_test_diff_maps", 
-        "mapdup_test", 
-        "creation_and_insertion_test" 
+    char* names[NUM_TESTS] = {
+        "map_cmp_test_same_maps",
+        "map_cmp_test_diff_maps",
+        "mapdup_test",
+        "creation_and_insertion_test",
+        "retrieve_keys_test"
     };
-    int (*tests[NUM_TESTS])() = { 
-        map_cmp_test_same_maps, 
-        map_cmp_test_diff_maps, 
-        mapdup_test, 
-        creation_and_insertion_test 
+    int (*tests[NUM_TESTS])() = {
+        map_cmp_test_same_maps,
+        map_cmp_test_diff_maps,
+        mapdup_test,
+        creation_and_insertion_test,
+        retrieve_keys_test
     };
     int results[NUM_TESTS];
 
