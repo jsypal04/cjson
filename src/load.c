@@ -265,6 +265,13 @@ void traverse_nval(NextValueAST* nval, MapArray* json_arr) {
 }
 
 
+Map* load(const char* data) {
+    ObjectAST* ast = parse(data);
+    Map* json_data = traverse_obj(ast);
+
+    destroyAST(ast);
+    return json_data;
+}
 
 Map* load_file(const char* path) {
     FILE* src_stream = fopen(path, "r");
