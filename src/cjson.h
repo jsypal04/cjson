@@ -10,7 +10,17 @@ extern "C" {
 #include <stdlib.h>
 #include <stdbool.h>
 
+#if DEBUG_MEMORY
+    #define malloc(size) debug_malloc(size, __FILE__, __LINE__)
+    #define free(ptr) debug_free(ptr, __FILE__, __LINE__)
+#endif
+
 #define MAX_FILE_SIZE_B 1048576 // Maximum allowed json file measured in bytes (equivalent to 1MB)
+
+// Debug Functions
+
+void* debug_malloc(size_t size, const char* filename, int line_number);
+void debug_free(void* ptr, const char* filename, int line_number);
 
 /*
  * Data Structure to store the JSON data (An ordered map)

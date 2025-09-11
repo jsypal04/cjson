@@ -3,3 +3,6 @@
 /tests/build/
 /tests/bin/
 /jsonOutput/
+logs/
+.cache/
+compile_commands.json

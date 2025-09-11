@@ -33,3 +33,9 @@ add_executable(dumpTests
     utils/map_utils.c
 )
 target_link_libraries(dumpTests ${CMAKE_SOURCE_DIR}/../../bin/libcjson.a)
+
+add_executable(memoryLeakTest
+    memoryLeakTest.c
+    utils/map_utils.c
+)
+target_link_libraries(memoryLeakTest ${CMAKE_SOURCE_DIR}/../../bin/libcjson.a)
