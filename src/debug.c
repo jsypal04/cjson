@@ -5,36 +5,40 @@
 #include <time.h>
 
 #undef malloc
+#undef strdup
 #undef free
 
-#define MEMORY_FREE_LOG "/home/sypalj/cjson/logs/memory_free.log"
+#define MALLOC_ARR_SIZE 1000000
 
+unsigned long allocations = 0;
+
+
+char debug_input;
 
 void* debug_malloc(size_t size, const char* filename, int line_number) {
-    printf("Running debug malloc\n");
-    return malloc(size);
+    void* ptr = malloc(size); 
+    allocations++;
+
+    // printf("%s:%d, allocated pointer %p of size %zu (%lu allocations).\n", filename, line_number, ptr, size, allocations);
+    // scanf("%c", &debug_input);
+
+    return ptr;
+}
+
+char* debug_strdup(const char* str, const char* filename, int line_number)  {
+    char* copy = strdup(str);
+    allocations++;
+
+    // printf("%s:%d, allocated string pointer %p (%lu allocations).\n", filename, line_number, copy, allocations);
+    // scanf("%c", &debug_input);
+
+    return copy;
 }
 
 void debug_free(void *ptr, const char *filename, int line_number) {
-    printf("Running debug free\n");
 
-    time_t now = time(NULL);
-    const char* timestamp = asctime(localtime(&now));
-
-    FILE* logfile = fopen(MEMORY_FREE_LOG, "a");
-    if (logfile == NULL) {
-        printf("ERROR: Failed to open logs/memory_free.log\n");
-        free(ptr);
-        return;
-    }
-
-    if (ptr == NULL) {
-        // fprintf(logfile, "[%s] %s:%d Attempted to free a NULL pointer", timestamp, filename, line_number);
-        fclose(logfile);
-        return;
-    }
-
-    // fprintf(logfile, "[%s] %s:%d Freeing memory at", timestamp, filename, line_number);
     free(ptr);
-    fclose(logfile);
+    allocations--;
+
+    // printf("%s:%d, freed pointer %p (%lu allocations).\n", filename, line_number, ptr, allocations);
 }

@@ -138,6 +138,10 @@ uint32_t dump_map(char** current_output, uint32_t current_idx, Map* map) {
     return current_idx;
 }
 
+/*
+ * Function to convert a map to a char*.
+ * NOTE: The caller is responsible for freeing the returned string.
+ * */
 char* dump(Map* map) {
     char* json = malloc(sizeof(char) * MAX_FILE_SIZE_B);
     uint32_t current_idx = 0;

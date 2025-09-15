@@ -9,9 +9,11 @@ extern "C" {
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include <string.h>
 
 #if DEBUG_MEMORY
     #define malloc(size) debug_malloc(size, __FILE__, __LINE__)
+    #define strdup(str) debug_strdup(str, __FILE__, __LINE__)
     #define free(ptr) debug_free(ptr, __FILE__, __LINE__)
 #endif
 
@@ -20,6 +22,7 @@ extern "C" {
 // Debug Functions
 
 void* debug_malloc(size_t size, const char* filename, int line_number);
+char* debug_strdup(const char* str, const char* filename, int line_number);
 void debug_free(void* ptr, const char* filename, int line_number);
 
 /*

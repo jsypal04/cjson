@@ -4,21 +4,29 @@
 
 #define JSON_SRC "~/cjson/tests/jsonSrc/loadTest1.json"
 
+extern void print_malloc_arr();
+
 void create_and_destroy_map() {
-    int iterations = 0;
+    Map* map = make_map();
+    destroyMap(map);
+
+    // print_malloc_arr();
+
+    /*int iterations = 0;
 
     while (true) {
         Map* map = make_map();
         destroyMap(map);
-    }
+    }*/
 }
 
 void end_to_end() {
     while (true) {
         Map* map = make_map();
-        const char* data = dump(map);
+        char* data = dump(map);
         Map* map2 = load(data);
 
+        free(data);
         destroyMap(map);
         destroyMap(map2);
     }
@@ -56,10 +64,22 @@ int main() {
     scanf("%c", &input);
 
     switch (input) {
-        case '1': end_to_end();
-        case '2': create_and_destroy_map();
-        case '3': dumping();
-        case '4': loading();
+        case '1': {
+            end_to_end();
+            break;
+        }
+        case '2': {
+            create_and_destroy_map();
+            break;
+        }
+        case '3': {
+            dumping();
+            break;
+        }
+        case '4': {
+            loading();
+            break;
+        }
         default: printf("Bad selection.\n");
     }
 
