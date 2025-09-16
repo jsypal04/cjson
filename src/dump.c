@@ -144,6 +144,7 @@ uint32_t dump_map(char** current_output, uint32_t current_idx, Map* map) {
  * */
 char* dump(Map* map) {
     char* json = malloc(sizeof(char) * MAX_FILE_SIZE_B);
+    bzero(json, sizeof(char) * MAX_FILE_SIZE_B);
     uint32_t current_idx = 0;
 
     dump_map(&json, current_idx, map);
