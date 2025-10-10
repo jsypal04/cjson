@@ -1,4 +1,6 @@
-#include "cjson.h"
+#include "deserialization.h"
+#include <stdint.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -7,13 +9,13 @@ the parser is on. For debugging purposes. */
 int astDepth = 0;
 char keyboardInput;
 
-ObjectAST* parse(const char* sourcePath) {
+ObjectAST* parse(const char* source) {
     // printf("Begin parsing %s.\n", sourcePath);
     // scanf("%c", &keyboardInput);
 
-    SourceLexState state = initLexer(sourcePath);
+
+    SourceLexState state = initLexer(source);
     ObjectAST* root = parseObject(&state);
-    fclose(state.source);
 
     // printf("End parsing %s.\n", sourcePath);
     return root;
@@ -120,8 +122,11 @@ ArrayAST* parseArray(SourceLexState* state) {
         lex(state);
         return array;
     }
+    else if (state->token == END) {
+        return array;
+    }
     else {
-        printf("ERROR: unknown character (parser.c:107) %s.\n", state->lexeme);
+        printf("ERROR: unknown character (parser.c:107) %s (token = %d).\n", state->lexeme, state->token);
         exit(1);
     }
     // printf("Done parsing array.\n");
@@ -158,6 +163,10 @@ NextPairAST* parseNextPair(SourceLexState* state) {
 
     lex(state);
 
+    if (state->token == RBRACKET) {
+        lex(state);
+    }
+
     if (state->token == COMMA) {
         // another pair to parse
         astDepth++;
@@ -171,9 +180,12 @@ NextPairAST* parseNextPair(SourceLexState* state) {
         nextPair->nextPair = NULL;
         return nextPair;
     }
+    else if (state->token == END) {
+        return nextPair;
+    }
     else {
         // error
-        printf("ERROR: unknown symbol %s.\n", state->lexeme);
+        printf("ERROR: unknown symbol %s (token = %d).\n", state->lexeme, state->token);
         exit(1);
     }
     // printf("Done parsing next pair.\n");

@@ -35,7 +35,7 @@ int main(int argc, char* argv[]) {
     assert(val2->size == 2);
 
     for (int i = 0; i < val2->size; i++) {
-        Map* val3 = read(val2, i, &type);
+        Map* val3 = read_arr(val2, i, &type);
         assert(type == MAP);
         assert(val3->size == 2);
 

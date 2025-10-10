@@ -2,6 +2,7 @@
 // this test uses the lexTest1.json source file
 #include <stdlib.h>
 #include "../../src/cjson.h"
+#include "../../src/deserialization.h"
 
 #define TOKEN_LEN 45
 
@@ -62,12 +63,25 @@ int main(int argc, char* argv[]) {
     populateCorrectTokens();
 
     char* jsonSrc = argv[1];
-    SourceLexState state = initLexer(jsonSrc);
+
+    FILE* src_stream = fopen(jsonSrc, "r");
+    char source[MAX_FILE_SIZE_B] = "\0";
+    uint32_t src_idx = 0;
+    char c = getc(src_stream);
+    while (c != EOF) {
+        source[src_idx] = c;
+        src_idx++;
+        c = getc(src_stream);
+    }
+    source[src_idx] = '\0';
+    fclose(src_stream);
+
+    SourceLexState state = initLexer(source);
 
     int index = 0;
     while (state.nextChar != EOF) {
         if (index >= TOKEN_LEN) {
-            printf("ERROR: lexer test 1 (basic syntax test) failed. Lexer output too many tokens.\n");
+            printf("ERROR: lexer test 1 (basic syntax test) failed. Lexer output too many tokens %d/%d.\n", index, TOKEN_LEN);
             failed = 1;
             break;
         }
@@ -77,6 +91,10 @@ int main(int argc, char* argv[]) {
         index++;
 
         lex(&state);
+
+        if (state.token == END) {
+            break;
+        }
     }
 
     for (int i = 0; i < TOKEN_LEN; i++) {
@@ -90,8 +108,6 @@ int main(int argc, char* argv[]) {
         printf("SUCCESS: lexer test 1 passed.\n");
         exit(0);
     }
-
-    fclose(state.source);
 
     exit(1);
 

@@ -465,7 +465,7 @@ void appendMapArray(MapArray** arr_ref, MapArray* value) {
     *arr_ref = result;
 }
 
-void* read(MapArray* array, int index, char* type) {
+void* read_arr(MapArray* array, int index, char* type) {
     if (index >= array->size) {
         return NULL;
     }
@@ -507,4 +507,109 @@ void printMapArray(MapArray* array) {
         }
     }
     printf("------------------------\n");
+}
+
+char** get_keys(Map* map) {
+    char* keys_arr[map->size];
+    int index = 0;
+
+    for (int i = 0; i < map->size; i++) {
+        keys_arr[i] = strdup(map->pairs[i].key);
+    }
+
+    char** keys = malloc(sizeof(keys_arr));
+    for (int i = 0; i < map->size; i++) {
+        keys[i] = strdup(keys_arr[i]);
+        free(keys_arr[i]);
+        keys_arr[i] = NULL;
+    }
+
+    return keys;
+}
+
+void destroy_keys_arr(char** keys, int length) {
+    for (int i = 0; i < length; i++) {
+        free(keys[i]);
+        keys[i] = NULL;
+    }
+    free(keys);
+    keys = NULL;
+}
+
+bool map_cmp(Map* map1, Map* map2) {
+    if (map1->size != map2->size) return false;
+
+    for (int i = 0; i < map1->size; i++) {
+        KeyValuePair pair1 = map1->pairs[i];
+        KeyValuePair pair2 = map2->pairs[i];
+
+        if (strcmp(pair1.key, pair2.key) != 0) return false;
+
+        if (pair1.type != pair2.type) return false;
+
+        bool values_are_eq;
+        switch (pair1.type) {
+            case INT: {
+                values_are_eq = *(int*)pair1.value == *(int*)pair2.value;
+                break;
+            }
+            case FLOAT: {
+                values_are_eq = *(float*)pair1.value == *(float*)pair2.value;
+                break;
+            }
+            case STRING: {
+                values_are_eq = strcmp((char*)pair1.value, (char*)pair2.value) == 0;
+                break;
+            }
+            case MAP: {
+                values_are_eq = map_cmp((Map*)pair1.value, (Map*)pair2.value);
+                break;
+            }
+            case ARRAY: {
+                values_are_eq = arr_cmp((MapArray*)pair1.value, (MapArray*)pair2.value);
+                break;
+            }
+        }
+
+        if (!values_are_eq) return false;
+    }
+    return true;
+}
+
+bool arr_cmp(MapArray* arr1, MapArray* arr2) {
+    if (arr1->size != arr2->size) return false;
+
+    for (int i = 0; i < arr1->size; i++) {
+        Element element1 = arr1->array[i];
+        Element element2 = arr2->array[i];
+
+        if (element1.type != element2.type) return false;
+
+        bool values_are_eq;
+        switch (element1.type) {
+            case INT: {
+                values_are_eq = *(int*)element1.value == *(int*)element2.value;
+                break;
+            }
+            case FLOAT: {
+                values_are_eq = *(float*)element1.value == *(float*)element2.value;
+                break;
+            }
+            case STRING: {
+                values_are_eq = strcmp((char*)element1.value, (char*)element2.value) == 0;
+                break;
+            }
+            case MAP: {
+                values_are_eq = map_cmp((Map*)element1.value, (Map*)element2.value);
+                break;
+            }
+            case ARRAY: {
+                values_are_eq = arr_cmp((MapArray*)element1.value, (MapArray*)element2.value);
+                break;
+            }
+        }
+
+        if (!values_are_eq) return false;
+    }
+    return true;
 }

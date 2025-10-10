@@ -8,6 +8,14 @@ cjson is a json parser written in C for serializing and deserializing json data 
 Much to your dismay this project is currently unusable. The idea is it will provide an api with functions that convert json text input to a C ordered map.
 Right now I am planning on simply having one header file and one static library to add to a project.
 
+## Roadmap
+
+This is basically a list of things that I want to add.
+
+- Convert C objects to json text
+- Build out unit tests
+- Do stress testing
+
 ## Supported Platforms
 
 I am building this on linux but, out of the goodness of my heart, am considering also making is compatable with Windows.
@@ -39,15 +47,8 @@ to run one or all of them. The tests directory also contains a bin directory for
 
 ## Building From Source
 
-You may be able to simply run `build.sh` but I honestly don't know if it still works.
-
 1. Clone the repo
-2. Make a `build` directory
-3. From the root directory run `cmake -S src -B path/to/build`
-4. From the root directory run `cmake --build path/to/build`
-5. Make a directory `tests/build`
-6. From the tests directory run `cmake -S src -B path/to/build`
-7. Run `cmake --build path/to/build`
+3. cd into the repo and run `./build.sh -clean`
 
 To use this, you need two files: `cjson.h` (in the src directory) and (on linux) `libcjson.a` (in the main build directory). Include the
 header file in your project and link the archive.
