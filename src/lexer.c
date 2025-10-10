@@ -29,6 +29,10 @@ char get_char(SourceLexState* state) {
     return c;
 }
 
+#if DEBUG_MODE
+    #undef lex
+#endif
+
 void lex(SourceLexState* state) {
     // fetch next character
     state->nextChar = get_char(state);

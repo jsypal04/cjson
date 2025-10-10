@@ -17,6 +17,11 @@ extern "C" {
     #define free(ptr) debug_free(ptr, __FILE__, __LINE__)
 #endif
 
+#define DEBUG_MODE 1
+#if DEBUG_MODE
+    #define lex(state) debug_lex(state)
+#endif
+
 #define MAX_FILE_SIZE_B 1048576 // Maximum allowed json file measured in bytes (equivalent to 1MB)
 
 // Debug Functions
@@ -122,7 +127,7 @@ void destroy_keys_arr(char** keys, int length);
  * Functions to load json parsed by the parser into a Map
  * */
 Map* load(const char* data);
-Map* load_file(const char* path);
+Map* load_file(const char* path); // I feel like this should be loadf but whatever
 
 bool is_float(char* value);
 

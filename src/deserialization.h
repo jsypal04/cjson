@@ -31,12 +31,25 @@ typedef struct SourceLexState {
     char* lexeme;
 } SourceLexState;
 
+// Debug lexer function
+
+void debug_lex(SourceLexState* statePtr);
+
 /*
 Lexer Functions
 */
+
+#if DEBUG_MODE
+    #undef lex
+#endif
+
 SourceLexState initLexer(const char* source);
 void lex(SourceLexState* statePtr);
 char get_char(SourceLexState* state);
+
+#if DEBUG_MODE
+    #define lex(state) debug_lex(state)
+#endif
 
 
 /************************

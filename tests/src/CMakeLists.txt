@@ -39,3 +39,6 @@ add_executable(memoryLeakTest
     utils/map_utils.c
 )
 target_link_libraries(memoryLeakTest ${CMAKE_SOURCE_DIR}/../../bin/libcjson.a)
+
+add_executable(snake_game_state_test snake_game_state_test.c)
+target_link_libraries(snake_game_state_test ${CMAKE_SOURCE_DIR}/../../bin/libcjson.a)

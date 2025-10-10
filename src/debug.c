@@ -1,4 +1,4 @@
-#include "cjson.h"
+#include "deserialization.h"
 #include <stddef.h>
 #include <stdlib.h>
 #include <stdio.h>
@@ -7,6 +7,7 @@
 #undef malloc
 #undef strdup
 #undef free
+#undef lex
 
 #define MALLOC_ARR_SIZE 1000000
 
@@ -41,4 +42,9 @@ void debug_free(void *ptr, const char *filename, int line_number) {
     allocations--;
 
     // printf("%s:%d, freed pointer %p (%lu allocations).\n", filename, line_number, ptr, allocations);
+}
+
+void debug_lex(SourceLexState* statePtr) {
+    lex(statePtr);
+    printf("Lexeme: %s\n", statePtr->lexeme);
 }

@@ -122,8 +122,11 @@ ArrayAST* parseArray(SourceLexState* state) {
         lex(state);
         return array;
     }
+    else if (state->token == END) {
+        return array;
+    }
     else {
-        printf("ERROR: unknown character (parser.c:107) %s.\n", state->lexeme);
+        printf("ERROR: unknown character (parser.c:107) %s (token = %d).\n", state->lexeme, state->token);
         exit(1);
     }
     // printf("Done parsing array.\n");
@@ -160,6 +163,10 @@ NextPairAST* parseNextPair(SourceLexState* state) {
 
     lex(state);
 
+    if (state->token == RBRACKET) {
+        lex(state);
+    }
+
     if (state->token == COMMA) {
         // another pair to parse
         astDepth++;
@@ -173,9 +180,12 @@ NextPairAST* parseNextPair(SourceLexState* state) {
         nextPair->nextPair = NULL;
         return nextPair;
     }
+    else if (state->token == END) {
+        return nextPair;
+    }
     else {
         // error
-        printf("ERROR: unknown symbol %s.\n", state->lexeme);
+        printf("ERROR: unknown symbol %s (token = %d).\n", state->lexeme, state->token);
         exit(1);
     }
     // printf("Done parsing next pair.\n");
