@@ -2,3 +2,5 @@
 /tests/build/
 .gitignore
 src/net/sockets
+bin
+compile_commands.json
