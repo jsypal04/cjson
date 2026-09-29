@@ -1,53 +1,36 @@
 # CJSON
 
-cjson is a json parser written in C for serializing and deserializing json data into a custom ordered map.
+cjson is json parser for serializing and deserializing json strings. I originally
+implemented it in C but it was not working so I decided to rewrite it in C++.
 
+## Building from Source
 
-## Use
+To build the project from source:
 
-Much to your dismay this project is currently unusable. The idea is it will provide an api with functions that convert json text input to a C ordered map.
-Right now I am planning on simply having one header file and one static library to add to a project.
+```
+git clone https://github.com/jsypal04/cjson.git
+make
+```
+This compiles a shared library to the build directory. The main.cc file is to
+provide an entrypoint to the library for testing. It compiles to an executable
+called `cjson`. Make sure `cjson` loads the library from the build directory, you
+have to add it to your library path:
 
-## Supported Platforms
+```sh
+export LD_LIBRARY_PATH=$PWD/build
+```
+or in fish:
 
-I am building this on linux but, out of the goodness of my heart, am considering also making is compatable with Windows.
+```fish
+set -x LD_LIBRARY_PATH $PWD/build
 
+```
 
-## File Structure
+## Installation
 
-The file structure of the project is as follows:
+To install the library and associated header file `json.h` system wide, run the
+following command:
 
-- **root**
-  - **src**
-    - C source files for the project
-  - **tests**
-    - **bin**
-      - binary files for all unit tests (probably will gitignore these at some point)
-    - **jsonSrc**
-      - json source files for all unit tests
-    - **lexTests**
-      - C source code for lexer unit tests
-    - **parserTests**
-      - C source code for parser unit tests
-    - **mapTests**
-      - C source code for map unit tests
-    - test.sh (script to run unit tests)
-  - build.sh (script to build the entire project including unit tests) (I never use this).
-
-There are two main directories: src, and tests. src contains the project's source code. tests contains unit tests written in C with a bash script
-to run one or all of them. The tests directory also contains a bin directory for the unit test executables that the bash script will run.
-
-## Building From Source
-
-You may be able to simply run `build.sh` but I honestly don't know if it still works.
-
-1. Clone the repo
-2. Make a `build` directory
-3. From the root directory run `cmake -S src -B path/to/build`
-4. From the root directory run `cmake --build path/to/build`
-5. Make a directory `tests/build`
-6. From the tests directory run `cmake -S src -B path/to/build`
-7. Run `cmake --build path/to/build`
-
-To use this, you need two files: `cjson.h` (in the src directory) and (on linux) `libcjson.a` (in the main build directory). Include the
-header file in your project and link the archive.
+```
+sudo make install
+```
