@@ -1,0 +1,3 @@
+[submodule "testify"]
+	path = testify
+	url = git@github.com:jsypal04/testify.git

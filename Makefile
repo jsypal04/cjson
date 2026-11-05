@@ -2,13 +2,13 @@ MAJOR = 0
 MINOR = 1
 PATCH = 0
 
-CXX = g++
-CXXFLAGS = -g -Iinclude
+CC = gcc
+CFLAGS = -Wall -Wextra -g -Iinclude -Itestify
 
 BUILD_DIR = build
 
-SOURCES = $(shell find src -name "*.cc" | sed "s/src\///g") 
-OBJECTS = $(SOURCES:%.cc=$(BUILD_DIR)/%.o)
+SOURCES = $(shell find src -name "*.c" | sed "s/src\///g")
+OBJECTS = $(SOURCES:%.c=$(BUILD_DIR)/src/%.o)
 
 LIBNAME  = libcjson.so
 SONAME   = $(LIBNAME).$(MAJOR)
@@ -16,35 +16,47 @@ REALNAME = $(SONAME).$(MINOR).$(PATCH)
 
 LIB = $(BUILD_DIR)/$(REALNAME)
 BIN = $(BUILD_DIR)/cjson
+TEST_BIN = $(BUILD_DIR)/cjson-tests
 
-all: $(BIN) $(LIB)
+TESTIFY = $(BUILD_DIR)/libtestify.so
+
+all: $(LIB) $(BIN) $(TEST_BIN)
+
+test: $(TEST_BIN)
+	LD_LIBRARY_PATH=$(PWD)/$(BUILD_DIR) \
+	./$(TEST_BIN)
 
 install: $(LIB)
 	cp $(LIB) /usr/local/lib/$(REALNAME)
 	ln -sf $(REALNAME) /usr/local/lib/$(SONAME)
 	ln -sf $(SONAME) /usr/local/lib/$(LIBNAME)
 	mkdir -p /usr/local/include/cjson
-	cp include/json.h /usr/local/include/cjson/json.h
+	cp include/cjson.h /usr/local/include/cjson/cjson.h
 
 clean:
 	rm -rf $(BUILD_DIR)
 
 $(LIB): $(OBJECTS)
-	$(CXX) $(CXXFLAGS) -shared -fPIC $^ -o $@
+	$(CC) $(CFLAGS) -shared -fPIC $^ -o $@
 	ln -sf $(REALNAME) $(BUILD_DIR)/$(SONAME)
 	ln -sf $(SONAME) $(BUILD_DIR)/$(LIBNAME)
 
-$(BIN): $(BUILD_DIR)/main.o $(LIB)
-	$(CXX) $(CXXFLAGS) -L$(BUILD_DIR) $< -lcjson -o $@
+$(BIN): main.c $(LIB)
+	$(CC) $(CFLAGS) -L$(BUILD_DIR) $< -lcjson -o $@
 
-$(BUILD_DIR)/%.o: src/%.cc | $(BUILD_DIR)
-	$(CXX) $(CXXFLAGS) -fPIC -c $< -o $@
+$(TEST_BIN): tests/main.c $(TESTIFY)
+	$(CC) $(CFLAGS) -L$(BUILD_DIR) $< -lcjson -ltestify -o $@
 
-$(BUILD_DIR)/main.o: main.cc | $(BUILD_DIR)
-	$(CXX) $(CXXFLAGS) -c $< -o $@
+$(TESTIFY):
+	make -C testify
+	ln -sf ../testify/build/libtestify.so $(TESTIFY)
 
+
+$(BUILD_DIR)/src/%.o: src/%.c | $(BUILD_DIR)
+	mkdir -p $(dir $@)
+	$(CC) $(CFLAGS) -fPIC -c $< -o $@
 
 $(BUILD_DIR):
 	mkdir -p $(BUILD_DIR)
 
-.PHONY: all install clean
+.PHONY: all, install, clean, test
