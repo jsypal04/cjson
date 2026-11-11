@@ -22,7 +22,7 @@ TESTIFY = $(BUILD_DIR)/libtestify.so
 
 all: $(LIB) $(BIN) $(TEST_BIN)
 
-test: $(TEST_BIN)
+test: $(LIB) $(TEST_BIN)
 	LD_LIBRARY_PATH=$(PWD)/$(BUILD_DIR) \
 	./$(TEST_BIN)
 
@@ -34,7 +34,7 @@ install: $(LIB)
 	cp include/cjson.h /usr/local/include/cjson/cjson.h
 
 clean:
-	rm -rf $(BUILD_DIR)
+	rm -rf $(BUILD_DIR)/*
 
 $(LIB): $(OBJECTS)
 	$(CC) $(CFLAGS) -shared -fPIC $^ -o $@
@@ -44,10 +44,11 @@ $(LIB): $(OBJECTS)
 $(BIN): main.c $(LIB)
 	$(CC) $(CFLAGS) -L$(BUILD_DIR) $< -lcjson -o $@
 
-$(TEST_BIN): tests/main.c $(TESTIFY)
+$(TEST_BIN): tests/main.c $(TESTIFY) $(LIB)
 	$(CC) $(CFLAGS) -L$(BUILD_DIR) $< -lcjson -ltestify -o $@
 
 $(TESTIFY):
+	make -C testify clean
 	make -C testify
 	ln -sf ../testify/build/libtestify.so $(TESTIFY)
 

@@ -14,18 +14,19 @@
 
 /* Doubles buffer_p if space_needed is greater than or equal to
     cap - 1. The -1 is there to ensure an extra byte for null termination. */
-int8_t expand(char** buffer_p, size_t cap, size_t space_needed) {
+int8_t expand(char** buffer_p, size_t* cap, size_t space_needed) {
     char* buffer = *buffer_p;
     /* Ensure there is an extra byte at the end for the null terminator. */
-    if (space_needed >= cap - 1) {
+    while (space_needed >= *cap - 1) {
         int8_t ok;
-        EXP_BUFF(buffer, cap, ok);
+        EXP_BUFF(buffer, *cap, ok);
         if (ok != 0) {
             free(buffer);
             buffer = NULL;
             return ok;
         }
     }
+    *buffer_p = buffer;
     return 0;
 }
 
@@ -50,7 +51,7 @@ char* dump_arr(CJ_Arr arr) {
         }
 
         space_needed = len + (i == arr.len - 1 ? strlen(v) : strlen(v) + 1);
-        if (expand(&buffer, cap, space_needed) != 0) {
+        if (expand(&buffer, &cap, space_needed) != 0) {
             free(v);
             return NULL;
         }
@@ -66,7 +67,7 @@ char* dump_arr(CJ_Arr arr) {
         v = NULL;
     }
 
-    if (expand(&buffer, cap, len + 1) != 0) {
+    if (expand(&buffer, &cap, len + 1) != 0) {
         return NULL;
     }
     sprintf(buffer + len, "]");
@@ -97,7 +98,7 @@ char* dump_obj(CJ_Obj obj) {
         space_needed = len + strlen(obj.o[i].key) + strlen(v) + 3;
         space_needed += (i == obj.len - 1) ? 0 : 1;
 
-        if (expand(&buffer, cap, space_needed) != 0) {
+        if (expand(&buffer, &cap, space_needed) != 0) {
             free(v);
             return NULL;
         }
@@ -113,7 +114,7 @@ char* dump_obj(CJ_Obj obj) {
         v = NULL;
     }
 
-    if (expand(&buffer, cap, len + 1) != 0) {
+    if (expand(&buffer, &cap, len + 1) != 0) {
         return NULL;
     }
     sprintf(buffer + len, "}");
@@ -131,7 +132,7 @@ char* cj_dump(CJ_Value value) {
     switch (value.tag) {
         case CJ_STR: {
             space_needed = strlen(value.val.str) + len + 2;
-            if (expand(&buffer, cap, space_needed) != 0)
+            if (expand(&buffer, &cap, space_needed) != 0)
                 return NULL;
             sprintf(buffer + len, "\"%s\"", value.val.str);
             len = space_needed;
@@ -139,7 +140,7 @@ char* cj_dump(CJ_Value value) {
         }
         case CJ_NUM: {
             space_needed = len + 25;
-            if (expand(&buffer, cap, space_needed) != 0)
+            if (expand(&buffer, &cap, space_needed) != 0)
                 return NULL;
             sprintf(buffer + len, "%g", value.val.num);
             len = space_needed;
@@ -147,7 +148,7 @@ char* cj_dump(CJ_Value value) {
         }
         case CJ_NULL: {
             space_needed = len + 4;
-            if (expand(&buffer, cap, space_needed) != 0)
+            if (expand(&buffer, &cap, space_needed) != 0)
                 return NULL;
             sprintf(buffer + len, "null");
             len = space_needed;
@@ -155,7 +156,7 @@ char* cj_dump(CJ_Value value) {
         }
         case CJ_BOOL: {
             space_needed = len + 5;
-            if (expand(&buffer, cap, space_needed) != 0)
+            if (expand(&buffer, &cap, space_needed) != 0)
                 return NULL;
             sprintf(buffer + len, "%s", value.val.b ? "true" : "false");
             len = space_needed;
@@ -168,7 +169,7 @@ char* cj_dump(CJ_Value value) {
                 return NULL;
             }
             space_needed = len + strlen(arr_s);
-            if (expand(&buffer, cap, space_needed) != 0) {
+            if (expand(&buffer, &cap, space_needed) != 0) {
                 free(arr_s);
                 return NULL;
             }
@@ -185,7 +186,7 @@ char* cj_dump(CJ_Value value) {
                 return NULL;
             }
             space_needed =  len + strlen(obj_s);
-            if (expand(&buffer, cap, space_needed) != 0) {
+            if (expand(&buffer, &cap, space_needed) != 0) {
                 free(obj_s);
                 return NULL;
             }

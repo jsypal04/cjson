@@ -23,11 +23,15 @@ int8_t parse_string(CJ_Src** src_p, CJ_Token* tok) {
     src->p++;
     uint32_t str_start = src->p;
     while (src->src[src->p] != '"') {
-        src->p++;
+        char ch = src->src[src->p];
+        src->p += (ch == '\\' ? 2 : 1);
+        if (src->p > src->src_len) {
+            return -1;
+        }
     }
 
     tok->lex_len = src->p - str_start;
-    if (tok->lex_len >= tok->lex_cap) {
+    while (tok->lex_len >= tok->lex_cap) {
         int8_t ok;
         EXP_BUFF(tok->lexeme, tok->lex_cap, ok);
         if (ok != 0) return -1;
@@ -47,16 +51,29 @@ int8_t parse_num_or_id(CJ_Src** src_p, CJ_Token* tok) {
         tok->token = TOK_ID;
         while (isalnum(src->src[src->p])) {
             src->p++;
+            if (src->p > src->src_len) {
+                return -1;
+            }
+        }
+    } else if (isdigit(src->src[src->p]) || src->src[src->p] == '-') {
+        tok->token = TOK_NUM;
+        bool has_radix = false;
+        src->p++;
+        while (isdigit(src->src[src->p]) || (src->src[src->p] == '.' && !has_radix)) {
+            if (src->src[src->p] == '.') {
+                has_radix = true;
+            }
+            src->p++;
+            if (src->p > src->src_len) {
+                return -1;
+            }
         }
     } else {
-        tok->token = TOK_NUM;
-        while (isdigit(src->src[src->p]) || src->src[src->p] == '.') {
-            src->p++;
-        }
+        return -1;
     }
 
     tok->lex_len = src->p - start;
-    if (tok->lex_len >= tok->lex_cap) {
+    while (tok->lex_len >= tok->lex_cap) {
         int8_t ok;
         EXP_BUFF(tok->lexeme, tok->lex_cap, ok);
         if (ok != 0) return -1;
@@ -66,7 +83,7 @@ int8_t parse_num_or_id(CJ_Src** src_p, CJ_Token* tok) {
 }
 
 int8_t cj_open(CJ_Src *src, char *json, size_t n) {
-    src->src = strdup(json);
+    src->src = strndup(json, n);
     src->src_len = n;
     src->p = 0;
 
@@ -98,10 +115,14 @@ int8_t cj_next_token(CJ_Src *src) {
     if (tok.lexeme != NULL) {
         free(tok.lexeme);
         tok.lexeme = NULL;
+        src->cur_tok.lexeme = NULL;
     }
 
     while (isspace(src->src[src->p])) {
         src->p++;
+        if (src->p > src->src_len) {
+            return -1;
+        }
     }
 
     if (src->p >= src->src_len) {
@@ -146,11 +167,17 @@ int8_t cj_next_token(CJ_Src *src) {
             break;
 
         case '"':
-            if (parse_string(&src, &tok) != 0) return -1;
+            if (parse_string(&src, &tok) != 0) {
+                free(tok.lexeme);
+                return -1;
+            }
             break;
 
         default:
-            if (parse_num_or_id(&src, &tok) != 0) return -1;
+            if (parse_num_or_id(&src, &tok) != 0) {
+                free(tok.lexeme);
+                return -1;
+            }
             break;
     }
 

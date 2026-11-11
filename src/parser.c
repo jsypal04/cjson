@@ -1,3 +1,5 @@
+#include <stddef.h>
+#include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
@@ -68,6 +70,11 @@ int8_t parse_arr(CJ_Value* dest, CJ_Src* src) {
 
         arr.a[arr.len] = val;
         arr.len++;
+
+        cj_next_token(src);
+        if (cj_peek_token(src) == TOK_COMMA) {
+            cj_next_token(src);
+        }
     }
 
     dest->tag = CJ_ARR;
@@ -164,19 +171,64 @@ int8_t parse_obj(CJ_Value* dest, CJ_Src* src) {
 
 int8_t cj_parse(CJ_Value* dest, char* json, size_t n) {
     CJ_Src src = {0};
-    cj_open(&src, json, n);
+    int8_t r = cj_open(&src, json, n);
 
-    if (cj_peek_token(&src) != TOK_LBRACE) {
+    if (r != 0 || cj_peek_token(&src) != TOK_LBRACE) {
+        cj_close(&src);
         return 1;
     }
 
-    int8_t r = parse_obj(dest, &src);
-
+    r = parse_obj(dest, &src);
     if (r != 0) {
-        return r;
+        cj_free_value(dest);
+        cj_close(&src);
+        return 1;
+    }
+
+    r = cj_next_token(&src);
+    if (r != 0 || cj_peek_token(&src) != TOK_EOF) {
+        cj_free_value(dest);
+        cj_close(&src);
+        return 1;
     }
 
     cj_close(&src);
 
     return 0;
+}
+
+int8_t cj_parsef(CJ_Value* dest, const char* path) {
+    char ch;
+    char* buff;
+    size_t len;
+    size_t cap;
+
+    FILE* json_file = fopen(path, "r");
+    if (json_file == NULL) {
+        return -1;
+    }
+
+    len = 0;
+    cap = 128;
+    buff = malloc(sizeof(char) * cap);
+
+    ch = fgetc(json_file);
+    while (ch != EOF) {
+        while (len >= cap) {
+            size_t ok;
+            EXP_BUFF(buff, cap, ok);
+            if (ok != 0) {
+                fclose(json_file);
+                free(buff);
+                return ok;
+            }
+        }
+        buff[len] = ch;
+        len++;
+        ch = fgetc(json_file);
+    }
+
+    fclose(json_file);
+
+    return cj_parse(dest, buff, len);
 }
