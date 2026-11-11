@@ -142,7 +142,7 @@ char* cj_dump(CJ_Value value) {
             space_needed = len + 25;
             if (expand(&buffer, &cap, space_needed) != 0)
                 return NULL;
-            sprintf(buffer + len, "%g", value.val.num);
+            sprintf(buffer + len, "%.17g", value.val.num);
             len = space_needed;
             break;
         }

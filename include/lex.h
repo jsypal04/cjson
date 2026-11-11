@@ -39,6 +39,10 @@ int8_t cj_close(CJ_Src* src);
 
 int8_t cj_next_token(CJ_Src* src);
 
+/* Returns the next token without advancing the src pointer. `src` is
+ unaffected by this function. */
+CJ_TokenTag cj_peek_next_token(CJ_Src* src);
+
 CJ_TokenTag cj_peek_token(CJ_Src* src);
 char*       cj_peek_lex(  CJ_Src* src);
 

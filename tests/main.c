@@ -295,11 +295,34 @@ TEST(test_lex_multiple_radix) {
     return PASSED;
 }
 
+void clone_src(CJ_Src* dest, CJ_Src src);
+TEST(test_lex_clone_src) {
+    char json[16] = "{\"key\":";
+    CJ_Src src = {0};
+    CJ_Src src_clone = {0};
+    cj_open(&src, json, strlen(json));
+    clone_src(&src_clone, src);
+
+    bool ok =
+        src.p == src_clone.p &&
+        src.src_len == src_clone.src_len &&
+        src.src != src_clone.src &&
+        strcmp(src.src, src_clone.src) == 0 &&
+        src.cur_tok.token == src_clone.cur_tok.token &&
+        src.cur_tok.lex_cap == src_clone.cur_tok.lex_cap &&
+        src.cur_tok.lex_len == src_clone.cur_tok.lex_len &&
+        src.cur_tok.lexeme != src_clone.cur_tok.lexeme &&
+        strcmp(src.cur_tok.lexeme, src_clone.cur_tok.lexeme) == 0;
+
+    cj_close(&src);
+    cj_close(&src_clone);
+    return ok ? PASSED : FAILED;
+}
+
 /**
  * Test for dump.c
  */
 
-/* This is failing with a double free. */
 TEST(test_cj_dump_100_fields) {
     CJ_Value val = {0};
     cj_obj_init(&val);
@@ -314,6 +337,37 @@ TEST(test_cj_dump_100_fields) {
     printf("%s\n", result);
     cj_free_value(&val);
     return PASSED;
+}
+
+TEST(test_cj_dump_num_keeps_precision) {
+    double n = 1.22323423432234231231;
+
+    CJ_Value obj = {0};
+    CJ_Value num = {0};
+    cj_obj_init(&obj);
+    cj_num_init(&num, n);
+    cj_putobj(&obj, "key", num);
+    char* json = cj_dump(obj);
+    cj_free_value(&obj);
+    cj_free_value(&num);
+    cj_parse(&obj, json, strlen(json));
+    cj_getobj(obj, "key", &num);
+    if (num.tag != CJ_NUM) {
+        cj_free_value(&obj);
+        free(json);
+        return FAILED;
+    }
+    printf("num = %f\n", num.val.num);
+    if (n != num.val.num) {
+        cj_free_value(&obj);
+        free(json);
+        return FAILED;
+    }
+
+    cj_free_value(&obj);
+    free(json);
+    return PASSED;
+
 }
 
 /**
@@ -331,6 +385,38 @@ TEST(test_e2e_trailing_garbage) {
 
     cj_free_value(&val);
     return PASSED;
+}
+
+TEST(test_e2e_obj_no_commas) {
+    char json[128] = "{\"key\": 1 \"key2\": 2 \"key3\": 3}";
+    CJ_Value val = {0};
+    int8_t r = cj_parse(&val, json, strlen(json));
+    cj_free_value(&val);
+    return r == 0 ? FAILED : PASSED;
+}
+
+TEST(test_e2e_obj_trailing_comma) {
+    char json[128] = "{\"key\": 1, \"key2\": 2, \"key3\": 3,}";
+    CJ_Value val = {0};
+    int8_t r = cj_parse(&val, json, strlen(json));
+    cj_free_value(&val);
+    return r == 0 ? FAILED : PASSED;
+}
+
+TEST(test_e2e_arr_no_commas) {
+    char json[128] = "{\"key\": [1 2 3 4]}";
+    CJ_Value val = {0};
+    int8_t r = cj_parse(&val, json, strlen(json));
+    cj_free_value(&val);
+    return r == 0 ? FAILED : PASSED;
+}
+
+TEST(test_e2e_arr_trailing_comma) {
+    char json[128] = "{\"key\": [1, 2, 3, 4,]}";
+    CJ_Value val = {0};
+    int8_t r = cj_parse(&val, json, strlen(json));
+    cj_free_value(&val);
+    return r == 0 ? FAILED : PASSED;
 }
 
 TEST(test_e2e_array) {

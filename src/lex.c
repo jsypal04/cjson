@@ -106,6 +106,7 @@ int8_t cj_close(CJ_Src *src) {
         src->src = NULL;
     }
 
+    memset(src, 0, sizeof *src);
     return 0;
 }
 
@@ -184,6 +185,31 @@ int8_t cj_next_token(CJ_Src *src) {
     src->cur_tok = tok;
 
     return 0;
+}
+
+void clone_src(CJ_Src* dest, CJ_Src src) {
+    memset(dest, 0, sizeof *dest);
+
+    dest->src = strndup(src.src, src.src_len);
+    dest->src_len = src.src_len;
+    dest->p = src.p;
+
+    dest->cur_tok.lex_cap = src.cur_tok.lex_cap;
+    dest->cur_tok.lex_len = src.cur_tok.lex_len;
+    dest->cur_tok.token = src.cur_tok.token;
+    dest->cur_tok.lexeme = malloc(sizeof(char) * src.cur_tok.lex_cap);
+    bzero(dest->cur_tok.lexeme, sizeof(char) * src.cur_tok.lex_cap);
+    strncpy(dest->cur_tok.lexeme, src.cur_tok.lexeme, src.cur_tok.lex_cap);
+}
+
+CJ_TokenTag cj_peek_next_token(CJ_Src* src) {
+    CJ_Src src_clone = {0};
+    clone_src(&src_clone, *src);
+    cj_next_token(&src_clone);
+
+    CJ_TokenTag tag = cj_peek_token(&src_clone);
+    cj_close(&src_clone);
+    return tag;
 }
 
 CJ_TokenTag cj_peek_token(CJ_Src* src) {

@@ -72,8 +72,11 @@ int8_t parse_arr(CJ_Value* dest, CJ_Src* src) {
         arr.len++;
 
         cj_next_token(src);
-        if (cj_peek_token(src) == TOK_COMMA) {
+        CJ_TokenTag next_tok = cj_peek_next_token(src);
+        if (cj_peek_token(src) == TOK_COMMA && next_tok != TOK_RBRACK) {
             cj_next_token(src);
+        } else if (cj_peek_token(src) != TOK_RBRACK) {
+            return 1;
         }
     }
 
@@ -158,8 +161,10 @@ int8_t parse_obj(CJ_Value* dest, CJ_Src* src) {
         obj.len++;
 
         cj_next_token(src);
-        if (cj_peek_token(src) == TOK_COMMA) {
+        if (cj_peek_token(src) == TOK_COMMA && cj_peek_next_token(src) != TOK_RBRACE) {
             cj_next_token(src);
+        } else if (cj_peek_token(src) != TOK_RBRACE) {
+            return 1;
         }
     }
 
